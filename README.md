@@ -145,18 +145,16 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ## 🚀 Install
 
-**Claude Code**
+**One-liner** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
 ```bash
-claude skills install think-twice
+curl -sL https://raw.githubusercontent.com/albertobarnabo/think-twice/main/SKILL.md \
+  -o ~/.claude/skills/think-twice/SKILL.md --create-dirs
 ```
 
-**Manual** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
+**Or clone and copy manually:**
 ```bash
-# Claude Code
-cp SKILL.md ~/.claude/skills/think-twice/SKILL.md
-
-# Cursor
-cp SKILL.md ~/.cursor/skills/think-twice/SKILL.md
+git clone https://github.com/albertobarnabo/think-twice
+cp think-twice/SKILL.md ~/.claude/skills/think-twice/SKILL.md
 ```
 
 Then invoke before any heavy task:
