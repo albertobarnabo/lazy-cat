@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 lazy-agent
+# 🧠 think-twice
 
 ### *Before you work hard, make sure you can't work smart.*
 
@@ -15,7 +15,7 @@
 > *"A great engineer is a lazy engineer. They find the clever shortcut."* — Steve Jobs
 
 **Caveman** makes Claude talk less. **Superpowers** makes Claude think first.  
-**lazy-agent** makes Claude ask *"is there a smarter way?"* before doing anything expensive.
+**think-twice** makes Claude ask *"is there a smarter way?"* before doing anything expensive.
 
 </div>
 
@@ -23,7 +23,7 @@
 
 ## 🔥 The Problem: AI Agents Are Greedy
 
-LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without pausing to ask whether a better approach exists.
+LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without stopping to ask whether a better approach exists.
 
 This greediness wastes tokens on work that didn't need to happen, implementations that could've been one-liners, and complexity that could've been avoided entirely.
 
@@ -33,19 +33,19 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ## 💡 What This Skill Does
 
-`lazy-agent` forces Claude to pause before any heavy task and run a checklist:
+`think-twice` forces Claude to pause before any heavy task and climb a checklist — stopping the moment a smarter path is found:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  🛑  About to do something expensive?  Run this first.  │
+│  🛑  About to do something expensive?  Think twice.     │
 └──────────────────────────┬──────────────────────────────┘
                            │
          ┌─────────────────▼──────────────────┐
-         │  Am I solving the right problem?   │ ──✓──▶ Clarify first, then proceed
+         │  Am I solving the right problem?   │ ──✓──▶ Clarify first, save everything else
          └─────────────────┬──────────────────┘
                            │ ✗
          ┌─────────────────▼──────────────────┐
-         │  Does an existing solution exist?  │ ──✓──▶ API / package / dataset
+         │  Does an existing solution exist?  │ ──✓──▶ API / package / dataset / stdlib
          └─────────────────┬──────────────────┘
                            │ ✗
          ┌─────────────────▼──────────────────┐
@@ -61,23 +61,21 @@ This greediness wastes tokens on work that didn't need to happen, implementation
          └─────────────────┬──────────────────┘
                            │ ✗
          ┌─────────────────▼──────────────────┐
-         │  Proceed — minimum scope only      │
+         │  ✅ Proceed — minimum scope only   │
          └────────────────────────────────────┘
 ```
-
-Stop at the first checkpoint that reveals a better path.
 
 ---
 
 ## 💸 Token Cost at a Glance
 
-| Task | Greedy approach | Lazy approach | Saved |
+| Task | Greedy approach | Smart approach | Saved |
 |---|---|---|---|
 | Country selector with ISO codes | Hardcoded JSON, written by hand | `i18n-iso-countries` package | **~12,000 tokens** |
 | JWT auth flow | Custom implementation from scratch | `jsonwebtoken` / NextAuth | **~18,000 tokens** |
 | 500 fake user records | Written out one by one | `faker` — 2 lines | **~30,000 tokens** |
 | Timezone data for a scheduler | Full IANA lookup table, hardcoded | `moment-timezone` | **~20,000 tokens** |
-| Fuzzy search | Custom Levenshtein algorithm | `fuse.js` | **~8,000 tokens** |
+| Fuzzy search | Custom algorithm from scratch | `fuse.js` | **~8,000 tokens** |
 
 ---
 
@@ -87,9 +85,9 @@ Stop at the first checkpoint that reveals a better path.
 <summary><strong>"Add a country selector to the form"</strong></summary>
 <br/>
 
-**Greedy:** Writes all 195 countries with names, ISO codes, phone prefixes as a hardcoded array. ~12,000 tokens.
+**Greedy:** Writes all 195 countries with names, ISO codes, and phone prefixes as a hardcoded array. ~12,000 tokens.
 
-**Lazy:** `npm install i18n-iso-countries` — 4KB package, done in 2 lines.
+**Smart:** `npm install i18n-iso-countries` — 4KB package, done in 2 lines.
 
 </details>
 
@@ -99,7 +97,7 @@ Stop at the first checkpoint that reveals a better path.
 
 **Greedy:** Implements token signing, expiry, refresh, and error handling from scratch across 300+ lines. ~18,000 tokens.
 
-**Lazy:** `npm install jsonwebtoken` or `pip install PyJWT`. Full flow with NextAuth in minutes.
+**Smart:** `npm install jsonwebtoken` or `pip install PyJWT`. Full flow with NextAuth in minutes.
 
 </details>
 
@@ -109,7 +107,7 @@ Stop at the first checkpoint that reveals a better path.
 
 **Greedy:** Writes hundreds of user records manually — names, emails, addresses varied by hand. ~30,000 tokens.
 
-**Lazy:** `from faker import Faker` — realistic, locale-aware data in 2 lines.
+**Smart:** `from faker import Faker` — realistic, locale-aware data in 2 lines.
 
 </details>
 
@@ -119,7 +117,7 @@ Stop at the first checkpoint that reveals a better path.
 
 **Greedy:** Implements Levenshtein distance, scoring, and ranking from scratch. ~8,000 tokens.
 
-**Lazy:** `fuse.js` or `minisearch` — battle-tested, drop-in, took years to tune.
+**Smart:** `fuse.js` or `minisearch` — battle-tested, drop-in, took years to tune.
 
 </details>
 
@@ -127,9 +125,19 @@ Stop at the first checkpoint that reveals a better path.
 <summary><strong>"We need pagination for this list"</strong></summary>
 <br/>
 
-**Greedy:** Loads and renders all records, then slices client-side. Expensive, fragile.
+**Greedy:** Loads and renders all records upfront, then slices client-side. Expensive and fragile.
 
-**Lazy:** Fetches only the visible page. Defers the rest until actually needed.
+**Smart:** Fetches only the visible page. Defers the rest until actually needed.
+
+</details>
+
+<details>
+<summary><strong>"Add full-text search to the admin panel"</strong></summary>
+<br/>
+
+**Greedy:** Starts designing a custom indexing and ranking system. Hours of work.
+
+**Smart:** Pauses to ask: how many records are we actually searching? If it's under 10,000 — `fuse.js` runs in-memory with no backend at all.
 
 </details>
 
@@ -139,35 +147,35 @@ Stop at the first checkpoint that reveals a better path.
 
 **Claude Code**
 ```bash
-claude skills install lazy-agent
+claude skills install think-twice
 ```
 
 **Manual** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
 ```bash
 # Claude Code
-cp SKILL.md ~/.claude/skills/lazy-agent/SKILL.md
+cp SKILL.md ~/.claude/skills/think-twice/SKILL.md
 
 # Cursor
-cp SKILL.md ~/.cursor/skills/lazy-agent/SKILL.md
+cp SKILL.md ~/.cursor/skills/think-twice/SKILL.md
 ```
 
 Then invoke before any heavy task:
 ```
-/lazy-agent I need to implement full-text search across 10,000 records
+/think-twice I need to implement full-text search across 10,000 records
 ```
 
 ---
 
-## 🚫 When NOT to be lazy
+## 🚫 When NOT to think twice
 
 | Situation | Why to override |
 |---|---|
-| Security-critical code | Needs a vetted, audited implementation |
-| Latency-sensitive hot path | Runtime API call adds unacceptable delay |
-| Offline-first / zero-dependency env | No external solutions allowed |
+| Security-critical code | Needs a vetted, audited internal implementation |
+| Latency-sensitive hot path | A runtime call adds unacceptable delay |
+| Offline-first / zero-dependency env | External solutions not allowed |
 | The shortcut is overkill | Don't add a library for 5 lines of trivial code |
 
-In all cases, Claude proceeds — but **states why** it's not taking the lazy path.
+In all cases, Claude proceeds — but **states why** it's not taking the smart path.
 
 ---
 
@@ -175,7 +183,7 @@ In all cases, Claude proceeds — but **states why** it's not taking the lazy pa
 
 Productive laziness is a principle in both engineering and human performance: the best workers aren't the ones who work the hardest — they're the ones who identify the clever path and take it.
 
-`lazy-agent` gives Claude that instinct. One beat of reflection before execution. That beat is the difference between a solution that costs 50,000 tokens and one that costs 50.
+`think-twice` gives Claude that instinct. One beat of reflection before execution. That beat is the difference between a solution that costs 50,000 tokens and one that costs 50.
 
 > *The best code is code you didn't write. The best tokens are tokens you didn't spend.*
 

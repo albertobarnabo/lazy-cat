@@ -1,11 +1,11 @@
 ---
-name: lazy-agent
+name: think-twice
 description: >
   Forces Claude to pause before any high-cost task and ask: "Is there a cleverer, cheaper way to do
   this?" Triggers before heavy computation, large code generation, repetitive data writing, or any
-  implementation that feels like hard work. Claude must run a full lazy-check — questioning the approach,
-  the scope, and the strategy — before committing tokens to the obvious path. The goal is productive
-  laziness: always find the shortcut if one exists, always do less if less is enough.
+  implementation that feels like hard work. Claude must run a full think-twice check — questioning the
+  approach, the scope, and the strategy — before committing tokens to the obvious path. The goal is
+  productive laziness: always find the shortcut if one exists, always do less if less is enough.
 ---
 
 # Lazy Agent — Work Smarter, Not Harder
