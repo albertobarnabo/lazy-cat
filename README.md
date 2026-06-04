@@ -2,7 +2,11 @@
 
 > "A great engineer is a lazy engineer. They find the clever shortcut." — Steve Jobs
 
-A [Claude Code](https://claude.ai/code) skill that teaches AI agents to **stop and think before they compute**.
+A [Claude Code](https://claude.ai/code) skill that teaches AI agents to **stop and check if the work already exists before doing it**.
+
+---
+
+**Caveman** makes Claude talk less. **Superpowers** makes Claude think first. **lazy-agent** makes Claude check if the work already exists before doing it.
 
 ---
 
@@ -15,6 +19,20 @@ That instinct is often wrong.
 An AI agent doesn't stop to ask "does this already exist?" It just starts generating. It picks the most direct path to an answer, not the most efficient one. This is the **greedy problem**: optimizing for immediate output at the expense of actual cost.
 
 The result is thousands of tokens spent on work that didn't need to happen.
+
+---
+
+## Token Cost at a Glance
+
+| Task | Greedy approach | Lazy approach | Tokens saved |
+|---|---|---|---|
+| 195 countries + ISO codes | Hardcoded JSON array | `i18n-iso-countries` package | **~12,000** |
+| JWT auth flow | Custom implementation | `jsonwebtoken` / NextAuth | **~18,000** |
+| 500 fake user records | Written manually | `faker` (2 lines) | **~30,000** |
+| All IANA timezones + offsets | Lookup table | `moment-timezone` | **~20,000** |
+| Fuzzy search | Custom Levenshtein impl | `fuse.js` | **~8,000** |
+
+At scale, across a team using Claude Code daily, this compounds into real money.
 
 ---
 
@@ -42,7 +60,7 @@ The agent implements a Levenshtein distance algorithm, a scoring function, and a
 
 ---
 
-## The Fix
+## The Fix: The Lazy Hierarchy
 
 `lazy-agent` interrupts the greedy reflex. Before Claude writes any significant block of code or data, it climbs a hierarchy:
 
@@ -60,28 +78,24 @@ When a better option exists, Claude says so explicitly before writing a line: *"
 
 ---
 
-## Token Cost at a Glance
-
-| Task | Greedy approach | Lazy approach | Tokens saved |
-|---|---|---|---|
-| 195 countries + ISO codes | Hardcoded JSON array | `i18n-iso-countries` package | ~12,000 |
-| JWT auth flow | Custom implementation | `jsonwebtoken` / NextAuth | ~18,000 |
-| 500 fake user records | Written manually | `faker` (2 lines) | ~30,000 |
-| All IANA timezones + offsets | Lookup table | `moment-timezone` | ~20,000 |
-| Fuzzy search | Custom algorithm | `fuse.js` | ~8,000 |
-
-At scale, across a team using Claude Code daily, this compounds into real money.
-
----
-
 ## Install
 
+**Claude Code**
 ```bash
-# Via Claude Code CLI
 claude skills install lazy-agent
 ```
 
-Or manually: drop [`SKILL.md`](./SKILL.md) into `~/.claude/skills/lazy-agent/SKILL.md`.
+**Manual (Claude Code, Cursor, Codex CLI, Gemini CLI)**
+
+Drop [`SKILL.md`](./SKILL.md) into your skills directory:
+
+```bash
+# Claude Code
+cp SKILL.md ~/.claude/skills/lazy-agent/SKILL.md
+
+# Cursor
+cp SKILL.md ~/.cursor/skills/lazy-agent/SKILL.md
+```
 
 Then invoke it before any heavy task:
 
@@ -100,7 +114,7 @@ The skill also teaches when the lazy option is the wrong one:
 - **Security-critical code** where a vetted internal implementation is mandated
 - **Trivial cases** where adding a dependency would be more complexity than the 5 lines it saves
 
-In those cases, Claude documents the reasoning and proceeds — instead of blindly falling through to "use a library."
+In those cases, Claude documents the reasoning and proceeds — instead of blindly reaching for a library.
 
 ---
 
@@ -110,7 +124,7 @@ Lazy evaluation is a well-understood concept in computer science: defer computat
 
 `lazy-agent` applies the same discipline to AI agents: defer generation until you've verified that nothing already exists.
 
-The best code is code you didn't write. The best tokens are tokens you didn't spend.
+**The best code is code you didn't write. The best tokens are tokens you didn't spend.**
 
 ---
 
