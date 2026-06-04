@@ -2,47 +2,77 @@
 
 > "A great engineer is a lazy engineer. They find the clever shortcut." — Steve Jobs
 
-A [Claude Code](https://claude.ai/code) skill that stops AI agents from doing work that's already been done.
+A [Claude Code](https://claude.ai/code) skill that teaches AI agents to **stop and think before they compute**.
 
 ---
 
-## The Problem
+## The Problem: LLMs Are Greedy
 
-When you ask a vibe-coding agent to "add all 151 Pokémon with their stats," it will start writing JSON. By hand. All 151 of them. One by one.
+LLMs are trained to be helpful by producing output. So when you ask them to do something, their instinct is to *start doing it* — immediately, thoroughly, from scratch.
 
-It's not stupid — it's *greedy*. It picks the most straightforward path available, which is often the most expensive one.
+That instinct is often wrong.
 
-**~50,000 tokens** wasted on data that already exists at `https://pokeapi.co/api/v2/pokemon`.
+An AI agent doesn't stop to ask "does this already exist?" It just starts generating. It picks the most direct path to an answer, not the most efficient one. This is the **greedy problem**: optimizing for immediate output at the expense of actual cost.
 
-This happens constantly:
-- Implementing OAuth from scratch when NextAuth exists
-- Handcrafting country lists when REST Countries API exists
-- Building a chart renderer when Recharts exists
-- Writing fake test data manually when Faker.js exists
+The result is thousands of tokens spent on work that didn't need to happen.
+
+---
+
+## Real Examples
+
+**"Add a country selector to the form"**
+
+The agent writes out all 195 countries with their names, ISO codes, phone prefixes, and flags — as a hardcoded JSON array. ~12,000 tokens. The REST Countries API returns all of this in one fetch call. The `i18n-iso-countries` npm package ships it as a 4KB file.
+
+**"Set up JWT authentication"**
+
+The agent implements token signing, expiry validation, refresh logic, and error handling from scratch — across 300+ lines. ~18,000 tokens. `jsonwebtoken` (Node) or `PyJWT` (Python) do exactly this. NextAuth or Passport handle the full flow.
+
+**"Generate test data for 500 users"**
+
+The agent starts writing user records. Name, email, address, phone, avatar URL — one by one, manually varied. ~30,000 tokens. `faker` generates statistically realistic data for any locale in two lines of code.
+
+**"Add timezone support to the scheduler"**
+
+The agent writes out a lookup table of all ~400 IANA timezones with UTC offsets and DST rules. ~20,000 tokens. `moment-timezone` or the native `Intl.supportedValuesOf('timeZone')` already have this.
+
+**"Build a search box with fuzzy matching"**
+
+The agent implements a Levenshtein distance algorithm, a scoring function, and a result ranker from scratch. ~8,000 tokens. `fuse.js` or `minisearch` are drop-in solutions that took years to tune.
+
+---
 
 ## The Fix
 
-`lazy-agent` teaches Claude a **search-before-generate** discipline. Before writing any significant chunk of code or data, it climbs a hierarchy:
+`lazy-agent` interrupts the greedy reflex. Before Claude writes any significant block of code or data, it climbs a hierarchy:
 
 ```
 Level 1  →  Is there a public API or hosted dataset?
 Level 2  →  Is there an npm / PyPI / NuGet package?
 Level 3  →  Is there a static open dataset to download?
-Level 4  →  Can it be computed lazily / on-demand?
-Level 5  →  Only then: write it from scratch
+Level 4  →  Can it be computed lazily / on-demand instead of precomputed?
+Level 5  →  Only then: generate from scratch
 ```
 
 Stop at the first level that solves the problem.
 
-## Before vs. After
+When a better option exists, Claude says so explicitly before writing a line: *"I found X which already handles this — using it instead of implementing from scratch."*
 
-| Without lazy-agent | With lazy-agent |
-|---|---|
-| Writes 151 Pokémon JSON entries (~50k tokens) | `fetch('https://pokeapi.co/api/v2/pokemon?limit=151')` (~10 tokens) |
-| Implements JWT validation from scratch | `pip install PyJWT` |
-| Hand-crafts all country ISO codes | `npm install i18n-iso-countries` |
-| Builds a full-text search engine | `npm install fuse.js` |
-| Generates 1,000 rows of test data manually | `from faker import Faker` |
+---
+
+## Token Cost at a Glance
+
+| Task | Greedy approach | Lazy approach | Tokens saved |
+|---|---|---|---|
+| 195 countries + ISO codes | Hardcoded JSON array | `i18n-iso-countries` package | ~12,000 |
+| JWT auth flow | Custom implementation | `jsonwebtoken` / NextAuth | ~18,000 |
+| 500 fake user records | Written manually | `faker` (2 lines) | ~30,000 |
+| All IANA timezones + offsets | Lookup table | `moment-timezone` | ~20,000 |
+| Fuzzy search | Custom algorithm | `fuse.js` | ~8,000 |
+
+At scale, across a team using Claude Code daily, this compounds into real money.
+
+---
 
 ## Install
 
@@ -53,57 +83,40 @@ claude skills install lazy-agent
 
 Or manually: drop [`SKILL.md`](./SKILL.md) into `~/.claude/skills/lazy-agent/SKILL.md`.
 
-Then invoke it in any Claude Code session:
+Then invoke it before any heavy task:
 
 ```
-/lazy-agent I need to show all countries with their ISO codes and flags
+/lazy-agent I need to add timezone support to the booking form
 ```
 
-Claude will pause, search for an existing solution, and propose it before writing a single line of static data.
-
-## How It Works
-
-The skill loads a decision checklist into Claude's context before any heavy task:
-
-- Am I writing >20 lines of repetitive data? → Red flag, stop
-- Am I implementing something that has a name? (auth, payments, maps) → Find the standard solution
-- Could this be computed on demand instead of precomputed? → Prefer lazy evaluation
-
-When it finds a better option, it tells you explicitly: *"I found X which provides this. Using it instead of hardcoding."*
+---
 
 ## When NOT to be lazy
 
-The skill also teaches when to override — because sometimes the "lazy" option is wrong:
+The skill also teaches when the lazy option is the wrong one:
 
-- Performance-critical paths where an external call adds unacceptable latency
-- Offline-first apps with strict no-external-dependency requirements  
-- Security-sensitive contexts where a vetted internal implementation is mandated
+- **Latency-sensitive paths** where a runtime API call is unacceptable
+- **Offline-first apps** with strict no-external-dependency requirements
+- **Security-critical code** where a vetted internal implementation is mandated
+- **Trivial cases** where adding a dependency would be more complexity than the 5 lines it saves
 
-In those cases, Claude documents the reasoning instead of silently falling through.
+In those cases, Claude documents the reasoning and proceeds — instead of blindly falling through to "use a library."
 
-## Token Math
+---
 
-This isn't just about good engineering. It's about cost.
+## The Idea
 
-| Task | Naive approach | Lazy approach | Savings |
-|---|---|---|---|
-| All 151 Gen-1 Pokémon | ~50,000 tokens | ~10 tokens | **99.98%** |
-| All 250 countries + codes | ~8,000 tokens | ~15 tokens | **99.8%** |
-| 500 fake user records | ~25,000 tokens | ~20 tokens | **99.9%** |
+Lazy evaluation is a well-understood concept in computer science: defer computation until the result is actually needed, and never compute what you can reuse.
 
-At scale, across a team using Claude Code daily, this compounds fast.
+`lazy-agent` applies the same discipline to AI agents: defer generation until you've verified that nothing already exists.
 
-## The Concept
-
-Lazy evaluation is a well-understood concept in computer science: defer computation until the result is actually needed. `lazy-agent` applies the same principle to AI-generated work: defer generation until you've confirmed nothing already exists.
-
-The best code is code you don't write. The best tokens are tokens you don't spend.
+The best code is code you didn't write. The best tokens are tokens you didn't spend.
 
 ---
 
 ## Contributing
 
-Found a common pattern that `lazy-agent` misses? Open a PR adding it to the substitution table in `SKILL.md`. The more real-world examples, the sharper the skill gets.
+Found a common pattern the skill misses? Open a PR adding it to the substitution table in [`SKILL.md`](./SKILL.md). Real-world examples make the skill sharper.
 
 ## License
 
