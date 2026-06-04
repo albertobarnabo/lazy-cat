@@ -1,94 +1,148 @@
-# lazy-agent
+<div align="center">
 
-> "A great engineer is a lazy engineer. They find the clever shortcut." — Steve Jobs
+# 🧠 lazy-agent
 
-A [Claude Code](https://claude.ai/code) skill that teaches AI agents to **stop and check if the work already exists before doing it**.
+### *Before you work hard, make sure you can't work smart.*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-skill-blueviolet)](https://claude.ai/code)
+[![Works with Cursor](https://img.shields.io/badge/Cursor-compatible-blue)](https://cursor.sh)
+[![Works with Codex](https://img.shields.io/badge/Codex%20CLI-compatible-green)](https://github.com/openai/codex)
+[![Tokens saved](https://img.shields.io/badge/tokens%20saved-up%20to%2099%25-brightgreen)](#-token-cost-at-a-glance)
+
+<br/>
+
+> *"A great engineer is a lazy engineer. They find the clever shortcut."* — Steve Jobs
+
+**Caveman** makes Claude talk less. **Superpowers** makes Claude think first.  
+**lazy-agent** makes Claude ask *"is there a smarter way?"* before doing anything expensive.
+
+</div>
 
 ---
 
-**Caveman** makes Claude talk less. **Superpowers** makes Claude think first. **lazy-agent** makes Claude check if the work already exists before doing it.
+## 🔥 The Problem: AI Agents Are Greedy
+
+LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without pausing to ask whether a better approach exists.
+
+This greediness wastes tokens on work that didn't need to happen, implementations that could've been one-liners, and complexity that could've been avoided entirely.
+
+**The fix is one beat of reflection before execution.**
 
 ---
 
-## The Problem: LLMs Are Greedy
+## 💡 What This Skill Does
 
-LLMs are trained to be helpful by producing output. So when you ask them to do something, their instinct is to *start doing it* — immediately, thoroughly, from scratch.
+`lazy-agent` forces Claude to pause before any heavy task and run a checklist:
 
-That instinct is often wrong.
+```
+┌─────────────────────────────────────────────────────────┐
+│  🛑  About to do something expensive?  Run this first.  │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+         ┌─────────────────▼──────────────────┐
+         │  Am I solving the right problem?   │ ──✓──▶ Clarify first, then proceed
+         └─────────────────┬──────────────────┘
+                           │ ✗
+         ┌─────────────────▼──────────────────┐
+         │  Does an existing solution exist?  │ ──✓──▶ API / package / dataset
+         └─────────────────┬──────────────────┘
+                           │ ✗
+         ┌─────────────────▼──────────────────┐
+         │  Am I doing more than needed?      │ ──✓──▶ Reduce scope, YAGNI
+         └─────────────────┬──────────────────┘
+                           │ ✗
+         ┌─────────────────▼──────────────────┐
+         │  Is there a simpler approach?      │ ──✓──▶ Reframe the problem
+         └─────────────────┬──────────────────┘
+                           │ ✗
+         ┌─────────────────▼──────────────────┐
+         │  Can it be done lazily / on-demand?│ ──✓──▶ Defer, paginate, memoize
+         └─────────────────┬──────────────────┘
+                           │ ✗
+         ┌─────────────────▼──────────────────┐
+         │  Proceed — minimum scope only      │
+         └────────────────────────────────────┘
+```
 
-An AI agent doesn't stop to ask "does this already exist?" It just starts generating. It picks the most direct path to an answer, not the most efficient one. This is the **greedy problem**: optimizing for immediate output at the expense of actual cost.
-
-The result is thousands of tokens spent on work that didn't need to happen.
+Stop at the first checkpoint that reveals a better path.
 
 ---
 
-## Token Cost at a Glance
+## 💸 Token Cost at a Glance
 
-| Task | Greedy approach | Lazy approach | Tokens saved |
+| Task | Greedy approach | Lazy approach | Saved |
 |---|---|---|---|
-| 195 countries + ISO codes | Hardcoded JSON array | `i18n-iso-countries` package | **~12,000** |
-| JWT auth flow | Custom implementation | `jsonwebtoken` / NextAuth | **~18,000** |
-| 500 fake user records | Written manually | `faker` (2 lines) | **~30,000** |
-| All IANA timezones + offsets | Lookup table | `moment-timezone` | **~20,000** |
-| Fuzzy search | Custom Levenshtein impl | `fuse.js` | **~8,000** |
-
-At scale, across a team using Claude Code daily, this compounds into real money.
+| Country selector with ISO codes | Hardcoded JSON, written by hand | `i18n-iso-countries` package | **~12,000 tokens** |
+| JWT auth flow | Custom implementation from scratch | `jsonwebtoken` / NextAuth | **~18,000 tokens** |
+| 500 fake user records | Written out one by one | `faker` — 2 lines | **~30,000 tokens** |
+| Timezone data for a scheduler | Full IANA lookup table, hardcoded | `moment-timezone` | **~20,000 tokens** |
+| Fuzzy search | Custom Levenshtein algorithm | `fuse.js` | **~8,000 tokens** |
 
 ---
 
-## Real Examples
+## 🔎 Real-World Examples
 
-**"Add a country selector to the form"**
+<details>
+<summary><strong>"Add a country selector to the form"</strong></summary>
+<br/>
 
-The agent writes out all 195 countries with their names, ISO codes, phone prefixes, and flags — as a hardcoded JSON array. ~12,000 tokens. The REST Countries API returns all of this in one fetch call. The `i18n-iso-countries` npm package ships it as a 4KB file.
+**Greedy:** Writes all 195 countries with names, ISO codes, phone prefixes as a hardcoded array. ~12,000 tokens.
 
-**"Set up JWT authentication"**
+**Lazy:** `npm install i18n-iso-countries` — 4KB package, done in 2 lines.
 
-The agent implements token signing, expiry validation, refresh logic, and error handling from scratch — across 300+ lines. ~18,000 tokens. `jsonwebtoken` (Node) or `PyJWT` (Python) do exactly this. NextAuth or Passport handle the full flow.
+</details>
 
-**"Generate test data for 500 users"**
+<details>
+<summary><strong>"Set up user authentication"</strong></summary>
+<br/>
 
-The agent starts writing user records. Name, email, address, phone, avatar URL — one by one, manually varied. ~30,000 tokens. `faker` generates statistically realistic data for any locale in two lines of code.
+**Greedy:** Implements token signing, expiry, refresh, and error handling from scratch across 300+ lines. ~18,000 tokens.
 
-**"Add timezone support to the scheduler"**
+**Lazy:** `npm install jsonwebtoken` or `pip install PyJWT`. Full flow with NextAuth in minutes.
 
-The agent writes out a lookup table of all ~400 IANA timezones with UTC offsets and DST rules. ~20,000 tokens. `moment-timezone` or the native `Intl.supportedValuesOf('timeZone')` already have this.
+</details>
 
-**"Build a search box with fuzzy matching"**
+<details>
+<summary><strong>"Generate test data for the staging environment"</strong></summary>
+<br/>
 
-The agent implements a Levenshtein distance algorithm, a scoring function, and a result ranker from scratch. ~8,000 tokens. `fuse.js` or `minisearch` are drop-in solutions that took years to tune.
+**Greedy:** Writes hundreds of user records manually — names, emails, addresses varied by hand. ~30,000 tokens.
+
+**Lazy:** `from faker import Faker` — realistic, locale-aware data in 2 lines.
+
+</details>
+
+<details>
+<summary><strong>"Build a search feature"</strong></summary>
+<br/>
+
+**Greedy:** Implements Levenshtein distance, scoring, and ranking from scratch. ~8,000 tokens.
+
+**Lazy:** `fuse.js` or `minisearch` — battle-tested, drop-in, took years to tune.
+
+</details>
+
+<details>
+<summary><strong>"We need pagination for this list"</strong></summary>
+<br/>
+
+**Greedy:** Loads and renders all records, then slices client-side. Expensive, fragile.
+
+**Lazy:** Fetches only the visible page. Defers the rest until actually needed.
+
+</details>
 
 ---
 
-## The Fix: The Lazy Hierarchy
-
-`lazy-agent` interrupts the greedy reflex. Before Claude writes any significant block of code or data, it climbs a hierarchy:
-
-```
-Level 1  →  Is there a public API or hosted dataset?
-Level 2  →  Is there an npm / PyPI / NuGet package?
-Level 3  →  Is there a static open dataset to download?
-Level 4  →  Can it be computed lazily / on-demand instead of precomputed?
-Level 5  →  Only then: generate from scratch
-```
-
-Stop at the first level that solves the problem.
-
-When a better option exists, Claude says so explicitly before writing a line: *"I found X which already handles this — using it instead of implementing from scratch."*
-
----
-
-## Install
+## 🚀 Install
 
 **Claude Code**
 ```bash
 claude skills install lazy-agent
 ```
 
-**Manual (Claude Code, Cursor, Codex CLI, Gemini CLI)**
-
-Drop [`SKILL.md`](./SKILL.md) into your skills directory:
-
+**Manual** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
 ```bash
 # Claude Code
 cp SKILL.md ~/.claude/skills/lazy-agent/SKILL.md
@@ -97,41 +151,44 @@ cp SKILL.md ~/.claude/skills/lazy-agent/SKILL.md
 cp SKILL.md ~/.cursor/skills/lazy-agent/SKILL.md
 ```
 
-Then invoke it before any heavy task:
-
+Then invoke before any heavy task:
 ```
-/lazy-agent I need to add timezone support to the booking form
+/lazy-agent I need to implement full-text search across 10,000 records
 ```
 
 ---
 
-## When NOT to be lazy
+## 🚫 When NOT to be lazy
 
-The skill also teaches when the lazy option is the wrong one:
+| Situation | Why to override |
+|---|---|
+| Security-critical code | Needs a vetted, audited implementation |
+| Latency-sensitive hot path | Runtime API call adds unacceptable delay |
+| Offline-first / zero-dependency env | No external solutions allowed |
+| The shortcut is overkill | Don't add a library for 5 lines of trivial code |
 
-- **Latency-sensitive paths** where a runtime API call is unacceptable
-- **Offline-first apps** with strict no-external-dependency requirements
-- **Security-critical code** where a vetted internal implementation is mandated
-- **Trivial cases** where adding a dependency would be more complexity than the 5 lines it saves
-
-In those cases, Claude documents the reasoning and proceeds — instead of blindly reaching for a library.
-
----
-
-## The Idea
-
-Lazy evaluation is a well-understood concept in computer science: defer computation until the result is actually needed, and never compute what you can reuse.
-
-`lazy-agent` applies the same discipline to AI agents: defer generation until you've verified that nothing already exists.
-
-**The best code is code you didn't write. The best tokens are tokens you didn't spend.**
+In all cases, Claude proceeds — but **states why** it's not taking the lazy path.
 
 ---
 
-## Contributing
+## 💡 The Idea
 
-Found a common pattern the skill misses? Open a PR adding it to the substitution table in [`SKILL.md`](./SKILL.md). Real-world examples make the skill sharper.
+Productive laziness is a principle in both engineering and human performance: the best workers aren't the ones who work the hardest — they're the ones who identify the clever path and take it.
 
-## License
+`lazy-agent` gives Claude that instinct. One beat of reflection before execution. That beat is the difference between a solution that costs 50,000 tokens and one that costs 50.
 
-MIT
+> *The best code is code you didn't write. The best tokens are tokens you didn't spend.*
+
+---
+
+## 🤝 Contributing
+
+Found a pattern where Claude defaults to the greedy approach? Open a PR adding it to the shortcuts table in [`SKILL.md`](./SKILL.md).
+
+---
+
+<div align="center">
+
+MIT License · Made with 💤 and good taste
+
+</div>

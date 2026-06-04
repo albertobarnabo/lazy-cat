@@ -1,118 +1,128 @@
 ---
 name: lazy-agent
 description: >
-  Teaches Claude to be "productively lazy" before doing heavy work: always check for existing APIs,
-  libraries, datasets, caches, or prebuilt solutions before generating content or performing calculations
-  from scratch. Trigger this skill whenever Claude Code is about to write a lot of boilerplate, manually
-  generate structured data (JSON, CSV, lists), implement something that sounds like a solved problem
-  (authentication, payment, maps, game data, translations, icons, charts), or re-derive facts that
-  likely exist in a public dataset or API. Examples: writing Pokémon stats manually, implementing OAuth
-  from scratch, hand-crafting country lists, building a chart library from scratch. If you catch yourself
-  about to write repetitive data or reinvent a wheel, STOP and consult this skill first.
+  Forces Claude to pause before any high-cost task and ask: "Is there a cleverer, cheaper way to do
+  this?" Triggers before heavy computation, large code generation, repetitive data writing, or any
+  implementation that feels like hard work. Claude must run a full lazy-check — questioning the approach,
+  the scope, and the strategy — before committing tokens to the obvious path. The goal is productive
+  laziness: always find the shortcut if one exists, always do less if less is enough.
 ---
 
-# Lazy Agent — Do Less, Ship More
+# Lazy Agent — Work Smarter, Not Harder
 
-> "A great engineer is a lazy engineer. They find the clever shortcut." — inspired by Steve Jobs
+> "A great engineer is a lazy engineer. They find the clever shortcut." — Steve Jobs
 
-This skill prevents token waste and brittle code by mandating a **search-before-generate** discipline.
-Before doing any heavy lifting, Claude must ask: *"Does this already exist?"*
+This skill rewires Claude's default instinct. Instead of charging ahead with the most obvious approach,
+Claude must first ask: **"Is there a smarter way to do this?"**
 
----
-
-## The Lazy Hierarchy
-
-Before writing any significant chunk of data, code, or logic, work through this checklist in order. Stop at the first level that solves the problem.
-
-### Level 1 — Is there a public API or hosted dataset?
-- Game data (Pokémon → PokéAPI, IGDB), sports stats, weather, currency rates, country/city lists, IP geolocation, dictionaries, stock prices, lyrics metadata, etc.
-- Check: Does a REST API exist that returns exactly this data at runtime? Prefer it — no maintenance, always up to date.
-
-### Level 2 — Is there an npm / PyPI / NuGet package?
-- Authentication (Passport, NextAuth), payments (Stripe SDK), maps (Leaflet, MapLibre), charts (Recharts, Chart.js), UI components (shadcn, MUI), date handling (date-fns), etc.
-- Check: Would `npm install <package>` or `pip install <package>` give this feature in 10 lines instead of 200?
-
-### Level 3 — Is there a static open dataset?
-- If runtime API calls are undesirable (latency, offline, no API key), check for a downloadable dataset (CSV, JSON, SQLite) from sources like Kaggle, HuggingFace datasets, GitHub awesome-lists, government open data.
-
-### Level 4 — Can it be derived/computed lazily?
-- Don't precompute all permutations. Generate on demand. Paginate. Cache results. Use memoization.
-- Example: don't pre-render 10,000 items — render the visible window.
-
-### Level 5 — Only then: generate / implement from scratch
-- If no external source exists and generation is truly necessary, proceed — but scope it to only what's needed now (YAGNI).
+Productive laziness is not about doing less. It's about never doing more than necessary.
 
 ---
 
-## Decision Checklist (run before any significant code block)
+## The Lazy Check
+
+Run this before any task that feels heavy — a large block of code, repetitive data, a complex algorithm,
+a long implementation. Stop at the first question that reveals a better path.
+
+### 1. Am I solving the right problem?
+Before writing a single line, make sure the task is correctly understood.
+- What is the user *actually* trying to achieve?
+- Am I about to solve a symptom instead of the root cause?
+- Would a 2-sentence clarification save 200 lines of code?
+
+### 2. Is there an existing solution?
+Someone has almost certainly solved this before.
+- **Public API**: Does a service already expose this data or functionality at runtime? Prefer it — no maintenance, always up to date.
+- **Package**: Would `npm install` or `pip install` deliver this in 10 lines instead of 200?
+- **Open dataset**: Is there a downloadable file (CSV, JSON, SQLite) from a trusted source?
+- **Standard library**: Does the language's stdlib already cover this?
+
+### 3. Am I doing too much?
+Scope creep is the enemy of efficiency.
+- Does the user need *all* of this, or just a slice?
+- Am I precomputing everything when I could compute on demand?
+- Am I generating 100 cases when 3 examples would prove the point?
+- YAGNI: if it's not needed *right now*, don't build it.
+
+### 4. Is my approach the most direct one?
+The obvious implementation is rarely the best one.
+- Is there a simpler data structure that makes the algorithm trivial?
+- Is there a one-liner that replaces 50 lines of logic?
+- Am I reaching for complexity when a lookup table would do?
+- Can I reframe the problem so the solution becomes obvious?
+
+### 5. Can I do this lazily?
+Defer work until it's actually needed.
+- Generate on demand instead of precomputing all cases.
+- Paginate instead of loading everything.
+- Cache results instead of recomputing.
+- Render what's visible, not what exists.
+
+### 6. Only then: proceed
+If none of the above reveals a shortcut, commit to the implementation — but scope it to the minimum
+that solves the problem today.
+
+---
+
+## Decision Checklist
+
+Run this mentally before any significant code block:
 
 ```
-[ ] Is this data someone else maintains? → Find the API/dataset
-[ ] Is this a common pattern? → Find the library
-[ ] Am I writing >20 lines of repetitive data? → Red flag, pause
-[ ] Am I implementing auth/payments/maps/charts from scratch? → Red flag, pause
-[ ] Could this be computed on-demand instead of precomputed? → Prefer lazy eval
-[ ] Am I solving a problem that has a name? (OAuth, CRUD, pagination) → Find the standard solution
+[ ] Do I fully understand what's being asked, or am I assuming?
+[ ] Does an API, package, or dataset already solve this?
+[ ] Am I building more than what's needed right now?
+[ ] Is there a simpler approach I'm overlooking?
+[ ] Can this be computed lazily instead of all at once?
+[ ] Would a 10-line solution exist if I reframed the problem?
 ```
+
+If any box triggers doubt — stop and explore that path before proceeding.
 
 ---
 
-## Common Lazy Substitutions
+## The Mindset
 
-| "About to do this..." | "Should instead..." |
+The greedy approach: *see task → start implementing → figure it out as you go.*
+
+The lazy approach: *see task → pause → find the clever path → implement only what's needed.*
+
+The difference is one beat of reflection before execution. That beat is what separates
+a solution that costs 50,000 tokens from one that costs 50.
+
+---
+
+## Common Shortcuts
+
+| Instead of... | Consider... |
 |---|---|
-| Write all Pokémon manually in JSON | Use [PokéAPI](https://pokeapi.co/) |
-| Write all country names/codes | Use `i18n-iso-countries` npm package or REST Countries API |
-| Implement JWT from scratch | Use `jsonwebtoken` (Node) or `PyJWT` (Python) |
-| Build OAuth flow manually | Use NextAuth / Passport / django-allauth |
-| Write a sorting algorithm | Use native `.sort()` or a well-known lib |
-| Hand-craft icon SVGs | Use Lucide, Heroicons, or FontAwesome |
-| Implement a chart from scratch | Use Recharts, Chart.js, or Plotly |
-| Write city/timezone data manually | Use `cities.json`, `moment-timezone`, or WorldCities dataset |
-| Generate fake data manually | Use Faker.js / Faker (Python) |
-| Implement full-text search | Use Fuse.js, MiniSearch, or Meilisearch |
-| Write currency conversion logic | Use Open Exchange Rates or `currency.js` |
-
----
-
-## How to Research Before Acting
-
-When about to generate a large block of data or implement a common feature:
-
-1. **Name the thing**: What is this data/feature called generically? (e.g., "Pokémon stats" → "game data API")
-2. **Search for it**: `<name> REST API`, `<name> npm package`, `<name> open dataset`
-3. **Evaluate the option**: Is it free? Rate-limited? Does it need an API key the user might not have?
-4. **Propose it to the user**: Don't silently switch strategies — briefly say "I found X which provides this data. Using it instead of hardcoding."
-5. **Fallback gracefully**: If the API/package doesn't work out, document why and proceed to the next level.
-
----
-
-## Token Budget Awareness
-
-The lazy approach isn't just about good engineering — it's about token efficiency:
-
-- Writing 500 Pokémon manually ≈ **~50,000 tokens wasted**
-- A single `fetch('https://pokeapi.co/api/v2/pokemon')` call ≈ **~10 tokens**
-
-When you notice yourself about to generate a large static dataset, treat it as a **smell** — pause and climb back up the lazy hierarchy.
-
----
-
-## Anti-patterns to Avoid
-
-- ❌ Generating exhaustive static JSON for data that has an official API
-- ❌ Writing an entire auth system when a library exists
-- ❌ Precomputing all combinations when lazy evaluation would do
-- ❌ Copy-pasting documentation into code instead of linking to it
-- ❌ Implementing a well-known algorithm from scratch without checking if stdlib covers it
+| Implementing a complex feature from scratch | Checking if a library already does it |
+| Hardcoding a large static dataset | Fetching it from an API at runtime |
+| Generating all permutations upfront | Computing on demand with memoization |
+| Building the full system now | Building only the part that's needed today |
+| Writing a clever algorithm | Checking if a simpler data structure makes it trivial |
+| Implementing auth, payments, maps from scratch | Using the standard library for that domain |
+| Generating many examples to prove a point | Using 2-3 representative cases |
+| Preloading everything on startup | Loading lazily when actually needed |
 
 ---
 
 ## When NOT to be lazy
 
-- Performance-critical paths where an external call would add unacceptable latency
-- Offline-first apps with strict no-external-dependency requirements
-- Security-sensitive contexts where a vetted internal implementation is mandated
-- When the "lazy" solution is overengineered for the actual need (don't add Redis for 10 items)
+Productive laziness has limits. Override it when:
 
-In these cases, document the reasoning: *"I'm implementing this manually because X."*
+- **Correctness requires it**: security-critical code needs a vetted internal implementation
+- **Latency requires it**: a runtime API call adds unacceptable delay to a hot path
+- **Dependencies are restricted**: offline-first or zero-dependency environments
+- **The shortcut is overengineered**: adding a library for 5 lines of trivial code
+
+In these cases, proceed — but state why: *"Implementing this directly because X."*
+
+---
+
+## The Rule
+
+**Before committing to any expensive path, spend 30 seconds looking for the cheap one.**
+
+If you find it, take it and explain what you chose.
+If you don't, proceed — and know you made the right call.
