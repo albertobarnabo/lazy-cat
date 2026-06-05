@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 think-twice
+# think-twice
 
 ### *Before you work hard, make sure you can't work smart.*
 
@@ -21,7 +21,7 @@
 
 ---
 
-## 🔥 The Problem: AI Agents Are Greedy
+## The Problem: AI Agents Are Greedy
 
 LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without stopping to ask whether a better approach exists.
 
@@ -31,7 +31,7 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ---
 
-## 💡 What This Skill Does
+## What This Skill Does
 
 `think-twice` forces Claude to pause before any heavy task and climb a checklist — stopping the moment a smarter path is found:
 
@@ -67,7 +67,7 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ---
 
-## 💸 Token Cost at a Glance
+## Token Cost at a Glance
 
 | Task | Greedy approach | Smart approach | Saved |
 |---|---|---|---|
@@ -79,7 +79,7 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ---
 
-## 🔎 Real-World Examples
+## Real-World Examples
 
 <details>
 <summary><strong>"Add a country selector to the form"</strong></summary>
@@ -143,7 +143,7 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ---
 
-## 🚀 Install
+## Install
 
 **One-liner** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
 ```bash
@@ -164,7 +164,7 @@ Then invoke before any heavy task:
 
 ---
 
-## 🚫 When NOT to think twice
+## When NOT to think twice
 
 | Situation | Why to override |
 |---|---|
@@ -177,7 +177,7 @@ In all cases, Claude proceeds — but **states why** it's not taking the smart p
 
 ---
 
-## 💡 The Idea
+## The Idea
 
 Productive laziness is a principle in both engineering and human performance: the best workers aren't the ones who work the hardest — they're the ones who identify the clever path and take it.
 
@@ -187,7 +187,7 @@ Productive laziness is a principle in both engineering and human performance: th
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Found a pattern where Claude defaults to the greedy approach? Open a PR adding it to the shortcuts table in [`SKILL.md`](./SKILL.md).
 
@@ -195,6 +195,6 @@ Found a pattern where Claude defaults to the greedy approach? Open a PR adding i
 
 <div align="center">
 
-MIT License · Made with 💤 and good taste
+MIT License
 
 </div>
