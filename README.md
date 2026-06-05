@@ -69,75 +69,93 @@ This greediness wastes tokens on work that didn't need to happen, implementation
 
 ## Token Cost at a Glance
 
-| Task | Greedy approach | Smart approach | Saved |
-|---|---|---|---|
-| Country selector with ISO codes | Hardcoded JSON, written by hand | `i18n-iso-countries` package | **~12,000 tokens** |
-| JWT auth flow | Custom implementation from scratch | `jsonwebtoken` / NextAuth | **~18,000 tokens** |
-| 500 fake user records | Written out one by one | `faker` — 2 lines | **~30,000 tokens** |
-| Timezone data for a scheduler | Full IANA lookup table, hardcoded | `moment-timezone` | **~20,000 tokens** |
-| Fuzzy search | Custom algorithm from scratch | `fuse.js` | **~8,000 tokens** |
+| Task | Greedy | Smart | Saved | Multiplier |
+|---|---|---|---|---|
+| City autocomplete (worldwide) | ~201,000 tokens | ~400 tokens | ~200,600 | **500x** |
+| 500 fake staging user profiles | ~50,500 tokens | ~200 tokens | ~50,300 | **250x** |
+| Live currency conversion | ~5,500 tokens | ~350 tokens | ~5,150 | **16x** |
+| PDF invoice generation | ~6,000 tokens | ~650 tokens | ~5,350 | **9x** |
+| Sliding window rate limiter | ~3,500 tokens | ~300 tokens | ~3,200 | **12x** |
 
 ---
 
 ## Real-World Examples
 
+These were tested by running each scenario through the skill checklist and comparing both paths.
+
 <details>
-<summary><strong>"Add a country selector to the form"</strong></summary>
+<summary><strong>"Build city autocomplete for our shipping form — all major cities worldwide"</strong></summary>
 <br/>
 
-**Greedy:** Writes all 195 countries with names, ISO codes, and phone prefixes as a hardcoded array. ~12,000 tokens.
-
-**Smart:** `npm install i18n-iso-countries` — 4KB package, done in 2 lines.
+| | Greedy | Think-Twice |
+|---|---|---|
+| **Approach** | Hardcodes 10,000 cities as a JSON array | `npm install world-cities` + 25-line component |
+| **Tokens** | ~201,000 | ~400 — **500x fewer** |
+| **Accuracy** | Frozen at generation time | 130,000 cities, maintained upstream |
+| **Diacritics** | Broken (Córdoba, Zürich fail) | Handled |
+| **Bundle size** | +1.6MB raw data | +1.2MB gzipped |
+| **Checkpoint fired** | — | Checkpoint 2 — existing package |
 
 </details>
 
 <details>
-<summary><strong>"Set up user authentication"</strong></summary>
+<summary><strong>"Generate 500 realistic user profiles for our staging database"</strong></summary>
 <br/>
 
-**Greedy:** Implements token signing, expiry, refresh, and error handling from scratch across 300+ lines. ~18,000 tokens.
-
-**Smart:** `npm install jsonwebtoken` or `pip install PyJWT`. Full flow with NextAuth in minutes.
+| | Greedy | Think-Twice |
+|---|---|---|
+| **Approach** | Writes 500 JSON records inline | 15-line `faker` script, seeded |
+| **Tokens** | ~50,500 | ~200 — **250x fewer** |
+| **Data quality** | Repetitive (~30 names recycled) | Statistically varied, 50+ locales |
+| **Bcrypt hashes** | Structurally valid, not login-usable | Real, login-usable |
+| **Re-runnability** | Zero — ephemeral output | Parameterized, version-controlled |
+| **Checkpoints fired** | — | Checkpoint 3 (scope) + Checkpoint 2 (faker) |
 
 </details>
 
 <details>
-<summary><strong>"Generate test data for the staging environment"</strong></summary>
+<summary><strong>"Add live currency conversion to our checkout — we sell in 15 countries"</strong></summary>
 <br/>
 
-**Greedy:** Writes hundreds of user records manually — names, emails, addresses varied by hand. ~30,000 tokens.
-
-**Smart:** `from faker import Faker` — realistic, locale-aware data in 2 lines.
+| | Greedy | Think-Twice |
+|---|---|---|
+| **Approach** | Hardcodes ~150 exchange rate pairs | Open Exchange Rates API, cached hourly |
+| **Tokens** | ~5,500 | ~350 |
+| **Rate accuracy** | Stale from the moment it's written | Always live |
+| **Coverage** | Incomplete, manually curated | 170+ currencies, maintained |
+| **Architecture** | Rates baked into code | Cron job + cache, rates never in repo |
+| **Checkpoints fired** | — | Checkpoint 1 (right problem?) + Checkpoint 2 (API) |
 
 </details>
 
 <details>
-<summary><strong>"Build a search feature"</strong></summary>
+<summary><strong>"Generate branded PDF invoices — logo, line items, totals, payment terms. Node.js."</strong></summary>
 <br/>
 
-**Greedy:** Implements Levenshtein distance, scoring, and ranking from scratch. ~8,000 tokens.
-
-**Smart:** `fuse.js` or `minisearch` — battle-tested, drop-in, took years to tune.
+| | Greedy | Think-Twice |
+|---|---|---|
+| **Approach** | 300–500 lines of PDFKit coordinate arithmetic | `pdfmake` declarative document definition |
+| **Tokens** | ~6,000 | ~650 |
+| **Pagination** | Manual — added after first bug report | Automatic |
+| **Cell overflow** | Manual — added after first bug report | Automatic |
+| **Lines of code** | 300–500 | ~40 |
+| **Checkpoint fired** | — | Checkpoint 2 — existing package |
 
 </details>
 
 <details>
-<summary><strong>"We need pagination for this list"</strong></summary>
+<summary><strong>"Implement rate limiting — 100 req per 15-min sliding window, per user per endpoint"</strong></summary>
 <br/>
 
-**Greedy:** Loads and renders all records upfront, then slices client-side. Expensive and fragile.
-
-**Smart:** Fetches only the visible page. Defers the rest until actually needed.
-
-</details>
-
-<details>
-<summary><strong>"Add full-text search to the admin panel"</strong></summary>
-<br/>
-
-**Greedy:** Starts designing a custom indexing and ranking system. Hours of work.
-
-**Smart:** Pauses to ask: how many records are we actually searching? If it's under 10,000 — `fuse.js` runs in-memory with no backend at all.
+| | Greedy | Think-Twice |
+|---|---|---|
+| **Approach** | Custom Redis sorted sets + Lua script | `rate-limiter-flexible` or `express-rate-limit` |
+| **Tokens** | ~3,500 | ~300 |
+| **Lines of code** | ~250 | 5–15 |
+| **Clock skew handling** | Manual (commonly missed) | Built-in |
+| **Redis failopen** | Manual (commonly missed) | Built-in |
+| **Rate-limit headers** | Manual | Automatic |
+| **Checkpoints fired** | — | Checkpoint 1 (sliding vs fixed?) + Checkpoint 2 (package) + Checkpoint 4 (simpler approach) |
 
 </details>
 
