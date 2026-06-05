@@ -1,0 +1,18 @@
+{
+  "name": "think-twice",
+  "description": "Forces Claude to pause before any expensive task and ask: is there a smarter way? Triggers before heavy computation, large code generation, or any implementation that feels like hard work. Claude runs a checklist — questioning the problem, the scope, the approach, and whether an existing API, package, or dataset already solves it. Saves thousands of tokens on tasks like: country or city data, authentication, fake data generation, PDF generation, rate limiting, search. The best tokens are the ones you didn't spend.",
+  "version": "1.0.0",
+  "author": {
+    "name": "albertobarnabo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "token-efficiency",
+    "cost-saving",
+    "lazy-evaluation",
+    "productivity",
+    "ai-agent",
+    "anti-patterns"
+  ],
+  "skills": ["./"]
+}
