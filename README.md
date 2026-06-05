@@ -120,7 +120,7 @@ These were tested by running each scenario through the skill checklist and compa
 | | Greedy | Think-Twice |
 |---|---|---|
 | **Approach** | Hardcodes ~150 exchange rate pairs | Open Exchange Rates API, cached hourly |
-| **Tokens** | ~5,500 | ~350 |
+| **Tokens** | ~5,500 | ~350 — **16x fewer** |
 | **Rate accuracy** | Stale from the moment it's written | Always live |
 | **Coverage** | Incomplete, manually curated | 170+ currencies, maintained |
 | **Architecture** | Rates baked into code | Cron job + cache, rates never in repo |
@@ -135,7 +135,7 @@ These were tested by running each scenario through the skill checklist and compa
 | | Greedy | Think-Twice |
 |---|---|---|
 | **Approach** | 300–500 lines of PDFKit coordinate arithmetic | `pdfmake` declarative document definition |
-| **Tokens** | ~6,000 | ~650 |
+| **Tokens** | ~6,000 | ~650 — **9x fewer** |
 | **Pagination** | Manual — added after first bug report | Automatic |
 | **Cell overflow** | Manual — added after first bug report | Automatic |
 | **Lines of code** | 300–500 | ~40 |
@@ -150,7 +150,7 @@ These were tested by running each scenario through the skill checklist and compa
 | | Greedy | Think-Twice |
 |---|---|---|
 | **Approach** | Custom Redis sorted sets + Lua script | `rate-limiter-flexible` or `express-rate-limit` |
-| **Tokens** | ~3,500 | ~300 |
+| **Tokens** | ~3,500 | ~300 — **12x fewer** |
 | **Lines of code** | ~250 | 5–15 |
 | **Clock skew handling** | Manual (commonly missed) | Built-in |
 | **Redis failopen** | Manual (commonly missed) | Built-in |
