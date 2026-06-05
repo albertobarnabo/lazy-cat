@@ -1,0 +1,32 @@
+{
+  "name": "think-twice",
+  "id": "think-twice",
+  "owner": {
+    "name": "albertobarnabo"
+  },
+  "metadata": {
+    "description": "Makes Claude pause before doing expensive work and ask: is there a smarter way? Saves up to 500x tokens by catching greedy AI behavior before it starts.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "think-twice",
+      "source": "./",
+      "description": "Forces Claude to run a checklist before any high-cost task: Am I solving the right problem? Does an existing solution exist? Am I doing more than needed? Is there a simpler approach? Can it be done lazily? Tested savings: 500x on city autocomplete, 250x on fake user profiles, 16x on currency conversion, 12x on rate limiting.",
+      "version": "1.0.0",
+      "author": {
+        "name": "albertobarnabo"
+      },
+      "keywords": [
+        "token-efficiency",
+        "cost-saving",
+        "productivity",
+        "lazy-evaluation",
+        "anti-patterns",
+        "ai-agent"
+      ],
+      "category": "productivity",
+      "strict": false
+    }
+  ]
+}

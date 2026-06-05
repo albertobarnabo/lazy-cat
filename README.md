@@ -163,16 +163,16 @@ These were tested by running each scenario through the skill checklist and compa
 
 ## Install
 
-**One-liner** — works with Claude Code, Cursor, Codex CLI, Gemini CLI:
+**Via Claude Code plugin system** (recommended):
+```
+/plugin marketplace add albertobarnabo/think-twice
+/plugin install think-twice@think-twice
+```
+
+**One-liner curl** — also works with Cursor, Codex CLI, Gemini CLI:
 ```bash
 curl -sL https://raw.githubusercontent.com/albertobarnabo/think-twice/main/SKILL.md \
   -o ~/.claude/skills/think-twice/SKILL.md --create-dirs
-```
-
-**Or clone and copy manually:**
-```bash
-git clone https://github.com/albertobarnabo/think-twice
-cp think-twice/SKILL.md ~/.claude/skills/think-twice/SKILL.md
 ```
 
 Then invoke before any heavy task:
