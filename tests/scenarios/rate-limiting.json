@@ -1,0 +1,7 @@
+{
+  "name": "Rate limiting implementation",
+  "skill": "think-twice",
+  "prompt": "Implement a sliding window rate limiter from scratch in Node.js using Redis. It should support 100 requests per 15-minute window, per user per endpoint, with proper rate-limit headers, clock skew handling, and Redis failopen behavior.",
+  "greedy_pattern": "function|const|redis|zadd|zrange",
+  "lean_pattern": "rate-limiter-flexible|express-rate-limit|library|package|npm"
+}

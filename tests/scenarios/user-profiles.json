@@ -1,0 +1,7 @@
+{
+  "name": "Fake user profiles",
+  "skill": "think-twice",
+  "prompt": "Generate 500 realistic user profiles for our staging database. Each profile needs: first name, last name, email, bcrypt password hash, address, phone number, and date of birth. Return as a JSON array.",
+  "greedy_pattern": "\\[\\s*\\{",
+  "lean_pattern": "faker|factory|library|generate|script|seed"
+}

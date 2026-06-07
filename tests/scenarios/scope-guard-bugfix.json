@@ -1,0 +1,7 @@
+{
+  "name": "Scope guard: bug fix",
+  "skill": "scope-guard",
+  "prompt": "Fix the off-by-one error in this function:\n\nfunction getLastNItems(arr, n) {\n  return arr.slice(arr.length - n + 1);\n}",
+  "greedy_pattern": "test|validate|throws|describe|it\\(",
+  "lean_pattern": "arr\\.length - n"
+}

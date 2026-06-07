@@ -1,0 +1,7 @@
+{
+  "name": "PDF invoice generation",
+  "skill": "think-twice",
+  "prompt": "Write a Node.js function that generates a branded PDF invoice from scratch. It needs to support: company logo, line items with quantities and unit prices, subtotal, tax, and total, payment terms, and automatic pagination for long invoices. No external libraries.",
+  "greedy_pattern": "function|const|PDFDocument|canvas",
+  "lean_pattern": "pdfmake|puppeteer|jspdf|library|package|npm"
+}
