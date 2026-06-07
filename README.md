@@ -49,18 +49,26 @@ Together they enforce lean at every level — strategy and execution.
 
 ## Token Cost at a Glance
 
-Real outputs from 11 independent test agents. Character-counted, not estimated.
+Ask Claude to generate 500 staging user profiles. Without lean, it writes every profile inline — all 500, field by field, 66,320 tokens of output. With lean, it writes a 54-line faker script instead. 372 tokens.
+
+> **Without lean:** ~66,320 tokens — about **$1.00** at Claude Sonnet API pricing.
+> **With lean:** ~372 tokens — about **half a cent.**
+> Same result. 178× the cost.
+
+That's not an edge case. That's the default behavior of every AI that hasn't been taught to think first.
 
 | Task | Greedy | Lean | Multiplier |
 |---|---|---|---|
-| 500 fake staging user profiles | ~66,320 tokens | ~372 tokens | **178x** |
-| Bug fix — parse_date off-by-one | ~962 tokens | ~61 tokens | **16x** |
-| Live currency conversion | ~1,795 tokens | ~134 tokens | **13x** |
-| City autocomplete (175 cities) | ~2,460 tokens | ~410 tokens | **6x** |
-| Sliding window rate limiter | ~2,152 tokens | ~414 tokens | **5x** |
-| PDF invoice generation | ~4,281 tokens | ~2,281 tokens | **2x** |
+| 500 fake user profiles | ~66,320 tok | ~372 tok | **178×** |
+| Bug fix — parse_date | ~962 tok | ~61 tok | **16×** |
+| Live currency conversion | ~1,795 tok | ~134 tok | **13×** |
+| City autocomplete | ~2,460 tok | ~410 tok | **6×** |
+| Rate limiter — sliding window | ~2,152 tok | ~414 tok | **5×** |
+| PDF invoice generation | ~4,281 tok | ~2,281 tok | **2×** |
 
-Each scenario was tested three ways — think-twice only, surgical only, and both — to show which skill drives the savings and when one beats the other. See [tests/summary.md](tests/summary.md) for the full breakdown.
+These six tasks — a normal vibe-coding afternoon — cost **77,970 tokens greedy vs. 3,672 tokens lean**. That's a $1.10 difference, every time, without changing a single prompt.
+
+*Real outputs from 11 independent test agents. Full code, character-counted. Each scenario tested think-twice only, surgical only, and both — to show which skill drives savings and when one beats the other. [Three-way breakdown →](tests/summary.md)*
 
 ---
 
