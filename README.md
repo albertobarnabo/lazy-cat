@@ -60,15 +60,20 @@ That's not an edge case. That's the default behavior of every AI that hasn't bee
 | Task | Greedy | Lean | Multiplier |
 |---|---|---|---|
 | 500 fake user profiles | ~66,320 tok | ~372 tok | **178×** |
+| Email validation | ~1,675 tok | ~93 tok | **18×** |
 | Bug fix — parse_date | ~962 tok | ~61 tok | **16×** |
 | Live currency conversion | ~1,795 tok | ~134 tok | **13×** |
+| Dark mode toggle | ~962 tok | ~117 tok | **8×** |
+| Deep clone fix | ~287 tok | ~40 tok | **7×** |
 | City autocomplete | ~2,460 tok | ~410 tok | **6×** |
 | Rate limiter — sliding window | ~2,152 tok | ~414 tok | **5×** |
+| Pagination | ~995 tok | ~203 tok | **5×** |
+| Console.log for debugging | ~419 tok | ~106 tok | **4×** |
 | PDF invoice generation | ~4,281 tok | ~2,281 tok | **2×** |
 
-These six tasks — a normal vibe-coding afternoon — cost **77,970 tokens greedy vs. 3,672 tokens lean**. That's a $1.10 difference, every time, without changing a single prompt.
+These eleven tasks — a normal vibe-coding afternoon — cost **82,308 tokens greedy vs. 4,231 tokens lean**. That's a $1.10 difference, every time, without changing a single prompt.
 
-*Real outputs from 11 independent test agents. Full code, character-counted. Each scenario tested think-twice only, surgical only, and both — to show which skill drives savings and when one beats the other. [Three-way breakdown →](tests/summary.md)*
+*Real outputs from 16 independent test agents. Full code, character-counted. Each scenario tested think-twice only, surgical only, and both — to show which skill drives savings and when one beats the other. [Three-way breakdown →](tests/summary.md)*
 
 ---
 
@@ -163,11 +168,40 @@ Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add valid
 
 </details>
 
+<details>
+<summary><strong>"Add email validation to our signup form"</strong></summary>
+<br/>
+
+| | Greedy | Lean |
+|---|---|---|
+| **Approach** | RFC 5322 regex + 65-entry disposable domain blocklist + live MX/SMTP probe + `lru_cache` | 4-line compiled regex, stdlib `re` only |
+| **Tokens** | ~1,675 | ~93 — **18x fewer** |
+| **Live network call** | On every validation (SMTP probe) | Does not exist |
+| **Strings to maintain** | 65 hardcoded disposable domains | 0 |
+| **Dependencies** | `smtplib`, `socket`, `logging`, `lru_cache` | None beyond stdlib |
+| **Checkpoint** | — | surgical — "validate email" ≠ "build a validation module" |
+
+</details>
+
+<details>
+<summary><strong>"Add a dark mode toggle button to the header"</strong></summary>
+<br/>
+
+| | Greedy | Lean |
+|---|---|---|
+| **Approach** | ThemeContext + ThemeProvider + useTheme hook + ThemeToggle component + localStorage + system `prefers-color-scheme` + CSS transitions + 18 CSS custom properties | `useState` + `classList.toggle` + 4 CSS lines |
+| **Tokens** | ~962 | ~117 — **8x fewer** |
+| **Files touched** | 5 | 1 |
+| **App entry point changed** | Yes (provider wrap in main.tsx) | No |
+| **Checkpoint** | — | surgical — user asked for a button, not a theme system |
+
+</details>
+
 ---
 
 ## Install
 
-### Option 1 — CLAUDE.md (guaranteed to fire)
+### Option 1 — CLAUDE.md
 
 Add this to your project's `CLAUDE.md`. Unlike skills, CLAUDE.md is always in context — no reliance on Claude's judgment about when to apply it:
 
