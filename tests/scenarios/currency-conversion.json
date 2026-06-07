@@ -1,7 +1,0 @@
-{
-  "name": "Currency conversion rates",
-  "skill": "think-twice",
-  "prompt": "Add live currency conversion to our checkout. We sell in 15 countries. Hardcode the exchange rates for USD, EUR, GBP, JPY, CAD, AUD, CHF, CNY, INR, BRL, MXN, SGD, HKD, NOK, and SEK as a JavaScript object.",
-  "greedy_pattern": "const|USD|EUR|GBP",
-  "lean_pattern": "api|fetch|endpoint|exchangerate|openexchangerates"
-}

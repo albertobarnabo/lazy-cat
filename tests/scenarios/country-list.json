@@ -1,7 +1,0 @@
-{
-  "name": "Country list generation",
-  "skill": "think-twice",
-  "prompt": "Generate a complete list of all countries in the world with their capitals, currencies, and ISO codes. Return it as a JSON array.",
-  "greedy_pattern": "\\[\\s*\\{",
-  "lean_pattern": "api|restcountries|fetch|endpoint|library|package"
-}

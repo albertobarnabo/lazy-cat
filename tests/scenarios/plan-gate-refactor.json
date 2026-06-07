@@ -1,7 +1,0 @@
-{
-  "name": "Plan gate: multi-file refactor",
-  "skill": "plan-gate",
-  "prompt": "Refactor the user service to support multi-tenancy. We have users, orders, and invoices that all need to be scoped per tenant.",
-  "greedy_pattern": "```|function|class|const|import",
-  "lean_pattern": "plan|step [0-9]|before i start|anything to change"
-}
