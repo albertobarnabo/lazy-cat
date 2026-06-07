@@ -1,52 +1,66 @@
 <div align="center">
 
-# think-twice
+# lean
 
-### *Before you work hard, make sure you can't work smart.*
+### *The best tokens are the ones you never spent.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet)](https://claude.ai/code)
-[![Version](https://img.shields.io/badge/version-2.0.0-orange)](https://github.com/albertobarnabo/think-twice)
+[![Version](https://img.shields.io/badge/version-2.0.0-orange)](https://github.com/albertobarnabo/lean)
 [![Works with Cursor](https://img.shields.io/badge/Cursor-compatible-blue)](https://cursor.sh)
 [![Works with Codex](https://img.shields.io/badge/Codex%20CLI-compatible-green)](https://github.com/openai/codex)
-[![Tokens saved](https://img.shields.io/badge/tokens%20saved-up%20to%2099%25-brightgreen)](#token-cost-at-a-glance)
+[![Tokens saved](https://img.shields.io/badge/tokens%20saved-up%20to%20500x-brightgreen)](#token-cost-at-a-glance)
 
 <br/>
 
 > *"A great engineer is a lazy engineer. They find the clever shortcut."* — Steve Jobs
 
-**think-twice** is the flagship skill of **lean** — a Claude Code plugin with two skills: one beat of reflection before picking an approach, and one guardrail against scope creep during implementation.
+**lean** is a Claude Code plugin that gives your AI the instinct great engineers are known for:<br/>pause before working hard, and make sure you can't work smart instead.
 
 </div>
 
 ---
 
-## The Problem: AI Agents Are Greedy
+## The Problem: AI Agents Are Wasteful
 
-LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without stopping to ask whether a better approach exists. And once they're writing, they add everything they can think of: error handling, tests, abstractions, refactors — none of which was asked for.
+Lean manufacturing has a word for unnecessary work: *muda*. Waste. Toyota built the world's most efficient production system by obsessing over eliminating it.
 
-**Two moments, two fixes.**
+AI agents have a muda problem. Given any task, Claude charges ahead with the most obvious implementation — thorough, from scratch, at full cost — without stopping to ask: *is there a smarter path?* And once it's writing, it adds everything it can think of: error handling, tests, abstractions, refactors — none of which was asked for.
+
+The result: thousands of unnecessary tokens. Work that didn't need to happen. Waste.
+
+**lean fixes this at the only two moments that matter.**
 
 ---
 
-## Two Skills
+## Two Skills. Two Moments.
 
-| Skill | Fires when | What it prevents |
+| Skill | When it fires | What it prevents |
 |---|---|---|
-| [**think-twice**](skills/think-twice/) | Before picking an approach | Reaching for a complex implementation when an API, package, or one-liner already exists |
-| [**surgical**](skills/surgical/) | Before writing code | Adding error handling, abstractions, and tests nobody asked for |
+| [**think-twice**](skills/think-twice/) | Before picking an approach | Implementing from scratch when an API, package, or one-liner already exists |
+| [**surgical**](skills/surgical/) | Before writing each block | Adding error handling, tests, and abstractions nobody asked for |
+
+think-twice asks: *is there a smarter path?*
+surgical asks: *did the user actually ask for this?*
+
+Together they enforce lean at every level — strategy and execution.
 
 ---
 
 ## Token Cost at a Glance
 
-| Task | Greedy | Smart | Saved | Multiplier |
-|---|---|---|---|---|
-| City autocomplete (worldwide) | ~201,000 tokens | ~400 tokens | ~200,600 | **500x** |
-| 500 fake staging user profiles | ~50,500 tokens | ~200 tokens | ~50,300 | **250x** |
-| Live currency conversion | ~5,500 tokens | ~350 tokens | ~5,150 | **16x** |
-| PDF invoice generation | ~6,000 tokens | ~650 tokens | ~5,350 | **9x** |
-| Sliding window rate limiter | ~3,500 tokens | ~300 tokens | ~3,200 | **12x** |
+Real outputs from 6 independent test agents. Character-counted, not estimated.
+
+| Task | Greedy | Lean | Multiplier |
+|---|---|---|---|
+| 500 fake staging user profiles | ~66,320 tokens | ~372 tokens | **178x** |
+| Bug fix — parse_date off-by-one | ~962 tokens | ~61 tokens | **16x** |
+| Live currency conversion | ~1,795 tokens | ~134 tokens | **13x** |
+| City autocomplete (175 cities) | ~2,460 tokens | ~410 tokens | **6x** |
+| Sliding window rate limiter | ~2,152 tokens | ~414 tokens | **5x** |
+| PDF invoice generation | ~4,281 tokens | ~2,281 tokens | **2x** |
+
+Full benchmarks with raw outputs: [tests/](tests/)
 
 ---
 
@@ -56,14 +70,13 @@ LLMs default to the most obvious path. When given a task, they start executing i
 <summary><strong>"Build city autocomplete for our shipping form — all major cities worldwide"</strong></summary>
 <br/>
 
-| | Greedy | Think-Twice |
+| | Greedy | Lean |
 |---|---|---|
-| **Approach** | Hardcodes 10,000 cities as a JSON array | `npm install world-cities` + 25-line component |
-| **Tokens** | ~201,000 | ~400 — **500x fewer** |
-| **Accuracy** | Frozen at generation time | 130,000 cities, maintained upstream |
+| **Approach** | Hardcodes cities as a static array | `npm install world-cities` + 40-line component |
+| **Tokens** | ~2,460 (175 cities) | ~410 — **6x fewer** |
+| **Accuracy** | Frozen at generation time | 23,000 cities from GeoNames, maintained upstream |
 | **Diacritics** | Broken (Córdoba, Zürich fail) | Handled |
-| **Bundle size** | +1.6MB raw data | +1.2MB gzipped |
-| **Checkpoint fired** | — | Checkpoint 2 — existing package |
+| **Checkpoint** | — | think-twice #2 — existing package |
 
 </details>
 
@@ -71,14 +84,14 @@ LLMs default to the most obvious path. When given a task, they start executing i
 <summary><strong>"Generate 500 realistic user profiles for our staging database"</strong></summary>
 <br/>
 
-| | Greedy | Think-Twice |
+| | Greedy | Lean |
 |---|---|---|
-| **Approach** | Writes 500 JSON records inline | 15-line `faker` script, seeded |
-| **Tokens** | ~50,500 | ~200 — **250x fewer** |
+| **Approach** | Writes 500 JSON records inline | 54-line `@faker-js/faker` script, parameterized |
+| **Tokens** | ~66,320 | ~372 — **178x fewer** |
 | **Data quality** | Repetitive (~30 names recycled) | Statistically varied, 50+ locales |
-| **Bcrypt hashes** | Structurally valid, not login-usable | Real, login-usable |
-| **Re-runnability** | Zero — ephemeral output | Parameterized, version-controlled |
-| **Checkpoints fired** | — | Checkpoint 3 (scope) + Checkpoint 2 (faker) |
+| **Bcrypt hashes** | Fake hashes — not login-usable | Real hashes — login-usable |
+| **Re-runnability** | Zero — ephemeral output | Seeded, version-controlled, `--count` flag |
+| **Checkpoints** | — | think-twice #2 (faker) + #3 (500 static = wrong shape) |
 
 </details>
 
@@ -86,29 +99,29 @@ LLMs default to the most obvious path. When given a task, they start executing i
 <summary><strong>"Add live currency conversion to our checkout — we sell in 15 countries"</strong></summary>
 <br/>
 
-| | Greedy | Think-Twice |
+| | Greedy | Lean |
 |---|---|---|
-| **Approach** | Hardcodes ~150 exchange rate pairs | Open Exchange Rates API, cached hourly |
-| **Tokens** | ~5,500 | ~350 — **16x fewer** |
+| **Approach** | Hardcodes 60+ exchange rate pairs | Frankfurter free API + hourly in-memory cache |
+| **Tokens** | ~1,795 | ~134 — **13x fewer** |
 | **Rate accuracy** | Stale from the moment it's written | Always live |
-| **Coverage** | Incomplete, manually curated | 170+ currencies, maintained |
-| **Architecture** | Rates baked into code | Cron job + cache, rates never in repo |
-| **Checkpoints fired** | — | Checkpoint 1 (right problem?) + Checkpoint 2 (API) |
+| **Coverage** | Incomplete, manually curated | 170+ currencies, ECB-maintained |
+| **Architecture** | Rates baked into code | Fetched at runtime, never in repo |
+| **Checkpoints** | — | think-twice #2 (API exists) + #5 (lazy fetch) |
 
 </details>
 
 <details>
-<summary><strong>"Generate branded PDF invoices — logo, line items, totals, payment terms. Node.js."</strong></summary>
+<summary><strong>"Generate branded PDF invoices — logo, line items, totals, payment terms"</strong></summary>
 <br/>
 
-| | Greedy | Think-Twice |
+| | Greedy | Lean |
 |---|---|---|
-| **Approach** | 300–500 lines of PDFKit coordinate arithmetic | `pdfmake` declarative document definition |
-| **Tokens** | ~6,000 | ~650 — **9x fewer** |
+| **Approach** | ~310 lines of PDFKit coordinate arithmetic | `pdfmake` declarative document definition |
+| **Tokens** | ~4,281 | ~2,281 — **2x fewer** |
 | **Pagination** | Manual — added after first bug report | Automatic |
 | **Cell overflow** | Manual — added after first bug report | Automatic |
-| **Lines of code** | 300–500 | ~40 |
-| **Checkpoint fired** | — | Checkpoint 2 — existing package |
+| **`y` cursor** | Tracked manually through every section | Does not exist |
+| **Checkpoint** | — | think-twice #2 — existing package |
 
 </details>
 
@@ -116,33 +129,29 @@ LLMs default to the most obvious path. When given a task, they start executing i
 <summary><strong>"Implement rate limiting — 100 req per 15-min sliding window, per user per endpoint"</strong></summary>
 <br/>
 
-| | Greedy | Think-Twice |
+| | Greedy | Lean |
 |---|---|---|
-| **Approach** | Custom Redis sorted sets + Lua script | `rate-limiter-flexible` or `express-rate-limit` |
-| **Tokens** | ~3,500 | ~300 — **12x fewer** |
-| **Lines of code** | ~250 | 5–15 |
+| **Approach** | Custom Redis sorted sets + Lua atomicity script | `rate-limiter-flexible` |
+| **Tokens** | ~2,152 | ~414 — **5x fewer** |
+| **Lines of code** | ~250 | ~18 |
 | **Clock skew handling** | Manual (commonly missed) | Built-in |
 | **Redis failopen** | Manual (commonly missed) | Built-in |
 | **Rate-limit headers** | Manual | Automatic |
-| **Checkpoints fired** | — | Checkpoint 1 (sliding vs fixed?) + Checkpoint 2 (package) + Checkpoint 4 (simpler approach) |
+| **Checkpoints** | — | think-twice #2 (library) + #4 (simpler approach) |
 
 </details>
-
----
-
-## surgical in Action
 
 <details>
 <summary><strong>"Fix the off-by-one error in parse_date"</strong></summary>
 <br/>
 
-| | Without surgical | With surgical |
+| | Greedy | Lean |
 |---|---|---|
-| **Output** | Bug fix + input validation + docstring + 3 unit tests + variable renames | The off-by-one fix, nothing else |
-| **Tokens** | ~800 | ~120 — **7x fewer** |
-| **Reviewability** | User must audit changes they never requested | User reviews exactly what they asked for |
+| **Output** | Bug fix + type annotations + input validation + docstring + 13 unit tests + logging | The one-line fix, nothing else |
+| **Tokens** | ~962 | ~61 — **16x fewer** |
+| **Reviewability** | User must audit 3,847 chars they never requested | User reviews exactly what they asked for |
 
-Result: `"Fixed the off-by-one on line 14. Didn't add tests or validation — let me know if you want those."`
+Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add validation or tests; let me know if you want those."*
 
 </details>
 
@@ -152,12 +161,12 @@ Result: `"Fixed the off-by-one on line 14. Didn't add tests or validation — le
 
 **Via Claude Code plugin system** (recommended):
 ```
-/plugin install albertobarnabo/think-twice
+/plugin install albertobarnabo/lean
 ```
 
 **One-liner curl** (installs both skills):
 ```bash
-BASE="https://raw.githubusercontent.com/albertobarnabo/think-twice/main/skills"
+BASE="https://raw.githubusercontent.com/albertobarnabo/lean/main/skills"
 for skill in think-twice surgical; do
   curl -sL "$BASE/$skill/SKILL.md" -o ~/.claude/skills/$skill/SKILL.md --create-dirs
 done
@@ -165,53 +174,68 @@ done
 
 **Single skill only:**
 ```bash
-curl -sL https://raw.githubusercontent.com/albertobarnabo/think-twice/main/skills/think-twice/SKILL.md \
+# think-twice only
+curl -sL https://raw.githubusercontent.com/albertobarnabo/lean/main/skills/think-twice/SKILL.md \
   -o ~/.claude/skills/think-twice/SKILL.md --create-dirs
+
+# surgical only
+curl -sL https://raw.githubusercontent.com/albertobarnabo/lean/main/skills/surgical/SKILL.md \
+  -o ~/.claude/skills/surgical/SKILL.md --create-dirs
 ```
 
-Skills load automatically when relevant — no slash commands needed.
+Skills fire automatically when relevant — no slash commands needed.
 
-**Explicit commands** (when you want to force a skill manually):
+**Explicit commands** (force a skill on a specific task):
 
 | Command | What it does |
 |---|---|
-| `/think-twice:think-twice <task>` | Force the checklist on a specific task |
-| `/think-twice:surgical <task>` | Implement with zero scope creep — exactly what was asked |
-
-Commands and skills complement each other: skills fire automatically in the background, commands let you invoke the same behavior explicitly when you need it.
+| `/lean:think-twice <task>` | Run the full lean checklist before starting |
+| `/lean:surgical <task>` | Implement with zero scope creep — exactly what was asked |
 
 ---
 
-## When NOT to apply these skills
+## When NOT to apply
+
+These skills are not dogma. Override them when:
 
 | Situation | Why to override |
 |---|---|
-| Security-critical code | Needs a vetted, audited internal implementation — not a shortcut |
+| Security-critical code | Always use stdlib or a widely-audited library — never a shortcut |
 | Latency-sensitive hot path | A runtime API call adds unacceptable delay |
-| Offline-first / zero-dependency env | External solutions not allowed |
-| The shortcut is overkill | Don't add a library for 5 lines of trivial code |
-| Scope expansion was explicitly requested | No need for surgical when the user asked for extras |
+| Offline-first / zero-dependency env | External solutions not available |
+| The shortcut is the overkill | Don't add a library for 5 trivial lines |
+| You explicitly asked for extras | surgical doesn't apply when scope expansion is the request |
 
-In all cases, Claude proceeds — but **states why** it's not applying the skill.
+In all cases, Claude proceeds — and **states why** it's overriding.
 
 ---
 
-## The Idea
+## The Philosophy
 
-Productive laziness is a principle in both engineering and human performance: the best workers aren't the ones who work the hardest — they're the ones who identify the clever path and take it.
+Lean thinking is not about doing less carelessly. It's about doing *exactly what creates value* — and cutting everything else before it costs you.
 
-These two skills give Claude that instinct: once before picking an approach, and once before writing code.
+Steve Jobs wasn't romanticizing laziness. He was describing the highest form of engineering judgment: the discipline to stop before the obvious path, find the clever one, and take only that.
 
-> *The best code is code you didn't write. The best tokens are tokens you didn't spend.*
+Most AI coding tools optimize for *doing more*. They generate thoroughly, completely, defensively — because generating is what they're good at.
+
+lean optimizes for *doing right*. Two questions, two moments, before the tokens flow:
+
+> *Is there a smarter path?*
+> *Is this exactly what was asked?*
+
+That's it. The rest follows.
 
 ---
 
 ## Contributing
 
-Found a pattern where Claude defaults to the greedy approach? Open a PR:
-- Add a shortcut to an existing skill's table
-- Propose a new skill with a clear trigger and a before/after example
-- Share a real token-cost comparison
+Found a new waste pattern — a task where Claude defaults to the expensive path when a better one exists? Open a PR:
+
+- A new shortcut row in an existing skill's table
+- A new skill for a pattern not yet covered
+- A real token-cost comparison from your own usage
+
+The best contributions, like the best code, are the ones that do exactly what's needed — nothing more.
 
 ---
 

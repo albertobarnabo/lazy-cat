@@ -101,10 +101,21 @@ Use `05-token-benchmark.md` as the evidence artifact when submitting to awesome-
 
 ## Files
 
+### Accuracy & integration tests
 | File | What it covers |
 |---|---|
 | `01-think-twice-trigger-accuracy.md` | 6 trigger scenarios for think-twice |
 | `02-surgical-trigger-accuracy.md` | 6 trigger scenarios for surgical |
 | `03-integration-both-skills.md` | 5 combined scenarios, interaction analysis |
 | `04-edge-cases-false-positives.md` | 8 adversarial/boundary scenarios |
-| `05-token-benchmark.md` | Real outputs, character counts, savings table |
+| `05-token-benchmark.md` | Original benchmark — 4 scenarios (country dropdown, pagination, isValidEmail, auth) |
+
+### README benchmarks (full code, character-counted)
+| File | Scenario | Multiplier |
+|---|---|---|
+| `06-benchmark-city-autocomplete.md` | City autocomplete worldwide | 6x |
+| `07-benchmark-fake-profiles.md` | 500 fake staging user profiles | 178x |
+| `08-benchmark-currency-conversion.md` | Live currency conversion | 13x |
+| `09-benchmark-pdf-invoices.md` | PDF invoice generation | 2x |
+| `10-benchmark-rate-limiting.md` | Sliding window rate limiter | 5x |
+| `11-benchmark-bug-fix.md` | Bug fix — parse_date off-by-one (surgical only) | 16x |
