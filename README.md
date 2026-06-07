@@ -235,6 +235,13 @@ That's it. The rest follows.
 
 ---
 
+## Contributors
+
+- [@albertobarnabo](https://github.com/albertobarnabo) — author
+- [@ayoubighissou99](https://github.com/ayoubighissou99) — co-author
+
+---
+
 ## Contributing
 
 Found a new waste pattern — a task where Claude defaults to the expensive path when a better one exists? Open a PR:
