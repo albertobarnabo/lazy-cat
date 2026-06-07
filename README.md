@@ -167,12 +167,34 @@ Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add valid
 
 ## Install
 
-**Via Claude Code plugin system** (recommended):
+### Option 1 — CLAUDE.md (guaranteed to fire)
+
+Add this to your project's `CLAUDE.md`. Unlike skills, CLAUDE.md is always in context — no reliance on Claude's judgment about when to apply it:
+
+```markdown
+**Before any substantial coding task** (new feature, data generation, implementation over ~20 lines):
+pause and check — does a public API, package, or one-liner already solve this? If yes, use it.
+Only then proceed with the minimum that solves the problem today.
+
+**Before writing each code block:**
+build only what was explicitly asked for. Do not add error handling, tests, type annotations,
+docstrings, or abstractions unless requested. If something seems worth adding, say so after
+delivering the output — don't add it unilaterally.
+
+**Skip both rules for:** bug fixes under ~10 lines, infra/terraform/k8s, DB queries, or when
+the user explicitly asked for a complete or production-ready implementation.
+```
+
+### Option 2 — Claude Code skills
+
+Skills load their full rulebook when invoked manually or when Claude judges the context matches. Better for on-demand use or projects where you don't want these rules active at all times.
+
+**Via plugin system:**
 ```
 /plugin install albertobarnabo/lean
 ```
 
-**One-liner curl** (installs both skills):
+**Via curl** (installs both skills):
 ```bash
 BASE="https://raw.githubusercontent.com/albertobarnabo/lean/main/skills"
 for skill in think-twice surgical; do
@@ -191,9 +213,7 @@ curl -sL https://raw.githubusercontent.com/albertobarnabo/lean/main/skills/surgi
   -o ~/.claude/skills/surgical/SKILL.md --create-dirs
 ```
 
-Skills fire automatically when relevant — no slash commands needed.
-
-**Explicit commands** (force a skill on a specific task):
+**Manual invocation** (force a skill on a specific task):
 
 | Command | What it does |
 |---|---|
