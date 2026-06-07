@@ -15,7 +15,7 @@
 
 > *"A great engineer is a lazy engineer. They find the clever shortcut."* — Steve Jobs
 
-**think-twice** is a Claude Code plugin with five skills — one for each moment where tokens get wasted.
+**think-twice** is a Claude Code plugin with two skills — one beat of reflection before picking an approach, and one guardrail against scope creep during implementation.
 
 </div>
 
@@ -23,44 +23,18 @@
 
 ## The Problem: AI Agents Are Greedy
 
-LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without stopping to ask whether a better approach exists.
+LLMs default to the most obvious path. When given a task, they start executing immediately — thoroughly, from scratch, at full cost — without stopping to ask whether a better approach exists. And once they're writing, they add everything they can think of: error handling, tests, abstractions, refactors — none of which was asked for.
 
-This greediness wastes tokens on work that didn't need to happen, implementations that could've been one-liners, plans that should've been aligned before the first keystroke, and prose that restates what the diff already shows.
-
-**The fix is one beat of reflection — at every stage.**
+**Two moments, two fixes.**
 
 ---
 
-## Five Skills, Five Moments
-
-Token waste happens at five distinct moments. Each skill targets exactly one.
-
-```
-User request arrives
-       │
-       ▼
-[clarify-first] ── ambiguous fork? ──────────► ask one question, save the redo
-       │
-       ▼
-[plan-gate] ── 3+ files or unclear arch? ────► write plan, wait for approval
-       │
-       ▼
-[think-twice] ── expensive approach? ────────► find cheaper path first
-       │
-       ▼
-[scope-guard] ── writing code ───────────────► match scope exactly to request
-       │
-       ▼
-[minimal-prose] ── writing response ─────────► cut every unnecessary sentence
-```
+## Two Skills
 
 | Skill | Fires when | What it prevents |
 |---|---|---|
 | **think-twice** | Before picking an approach | Reaching for a complex implementation when an API, package, or one-liner already exists |
 | **scope-guard** | Before writing code | Adding error handling, abstractions, and tests nobody asked for |
-| **clarify-first** | Before assuming | Picking one interpretation of an ambiguous task, building the wrong thing, having to redo it |
-| **plan-gate** | Before a complex task | Diving into a multi-file implementation without alignment, building the wrong architecture |
-| **minimal-prose** | On every response | Wrapping answers in preambles, summaries, and narration that add no information |
 
 ---
 
@@ -77,8 +51,6 @@ User request arrives
 ---
 
 ## Real-World Examples
-
-These were tested by running each scenario through the skill checklist and comparing both paths.
 
 <details>
 <summary><strong>"Build city autocomplete for our shipping form — all major cities worldwide"</strong></summary>
@@ -158,10 +130,10 @@ These were tested by running each scenario through the skill checklist and compa
 
 ---
 
-## Examples — New Skills
+## scope-guard in Action
 
 <details>
-<summary><strong>scope-guard: "Fix the off-by-one error in parse_date"</strong></summary>
+<summary><strong>"Fix the off-by-one error in parse_date"</strong></summary>
 <br/>
 
 | | Without scope-guard | With scope-guard |
@@ -174,55 +146,6 @@ Result: `"Fixed the off-by-one on line 14. Didn't add tests or validation — le
 
 </details>
 
-<details>
-<summary><strong>clarify-first: "Add authentication to the app"</strong></summary>
-<br/>
-
-| | Without clarify-first | With clarify-first |
-|---|---|---|
-| **Approach** | Builds full JWT middleware across 5 files | Asks one question first |
-| **Tokens** | ~4,500 (wrong implementation, full redo) | ~15 for the question + ~1,200 for the right implementation |
-| **Outcome** | User replies "we use Passport sessions, this is wrong" | User replies "sessions" → correct code on first attempt |
-
-Question asked: `"Before I start: JWT tokens or server-side sessions? The middleware and storage differ completely."`
-
-</details>
-
-<details>
-<summary><strong>plan-gate: "Refactor the user service to support multi-tenancy"</strong></summary>
-<br/>
-
-| | Without plan-gate | With plan-gate |
-|---|---|---|
-| **First action** | Starts touching 8 files immediately | Writes a 5-step plan, waits for approval |
-| **Tokens before alignment** | ~6,000 (wrong architecture, partial redo) | ~200 for the plan |
-| **Outcome** | User says "that's not what I meant by multi-tenancy" at line 400 | User redirects at line 0 |
-
-Plan written:
-```
-1. Add tenant_id column to users — migration in db/migrations/
-2. Add TenantMiddleware in src/middleware/tenant.ts — reads header, attaches to req
-3. Scope all User queries in src/services/user.ts to req.tenantId
-4. Update src/routes/auth.ts to pass tenantId through login flow
-5. Add cross-tenant isolation test in tests/tenant.test.ts
-
-Anything to change before I start?
-```
-
-</details>
-
-<details>
-<summary><strong>minimal-prose: "What does Array.flat() do?"</strong></summary>
-<br/>
-
-| | Without minimal-prose | With minimal-prose |
-|---|---|---|
-| **Response** | "Great question! `Array.flat()` is a very useful JavaScript method introduced in ES2019. Let me explain... In summary, it's a powerful tool for working with nested arrays." | Flattens a nested array one level deep. `[1, [2, 3]].flat() // [1, 2, 3]` |
-| **Tokens** | ~120 | ~25 — **5x fewer** |
-| **Information** | Identical | Identical |
-
-</details>
-
 ---
 
 ## Install
@@ -232,10 +155,10 @@ Anything to change before I start?
 /plugin install albertobarnabo/think-twice
 ```
 
-**One-liner curl** (installs all five skills):
+**One-liner curl** (installs both skills):
 ```bash
 BASE="https://raw.githubusercontent.com/albertobarnabo/think-twice/main/skills"
-for skill in think-twice scope-guard clarify-first plan-gate minimal-prose; do
+for skill in think-twice scope-guard; do
   curl -sL "$BASE/$skill/SKILL.md" -o ~/.claude/skills/$skill/SKILL.md --create-dirs
 done
 ```
@@ -253,10 +176,7 @@ Skills load automatically when relevant — no slash commands needed.
 | Command | What it does |
 |---|---|
 | `/think-twice:think-twice <task>` | Force the checklist on a specific task |
-| `/think-twice:plan-gate <task>` | Write a plan and wait for approval before any code |
-| `/think-twice:clarify-first <task>` | Surface the single most important ambiguity before starting |
 | `/think-twice:scope-guard <task>` | Implement with zero scope creep — exactly what was asked |
-| `/think-twice:minimal-prose <question>` | Get a direct answer with no preamble or filler |
 
 Commands and skills complement each other: skills fire automatically in the background, commands let you invoke the same behavior explicitly when you need it.
 
@@ -270,7 +190,7 @@ Commands and skills complement each other: skills fire automatically in the back
 | Latency-sensitive hot path | A runtime API call adds unacceptable delay |
 | Offline-first / zero-dependency env | External solutions not allowed |
 | The shortcut is overkill | Don't add a library for 5 lines of trivial code |
-| User provided a full spec | No need to plan-gate or clarify-first when scope is already locked |
+| Scope expansion was explicitly requested | No need for scope-guard when the user asked for extras |
 
 In all cases, Claude proceeds — but **states why** it's not applying the skill.
 
@@ -280,7 +200,7 @@ In all cases, Claude proceeds — but **states why** it's not applying the skill
 
 Productive laziness is a principle in both engineering and human performance: the best workers aren't the ones who work the hardest — they're the ones who identify the clever path and take it.
 
-These five skills give Claude that instinct — not just before picking an approach, but at every stage where tokens get wasted: before assuming, before planning, before coding, and before writing.
+These two skills give Claude that instinct: once before picking an approach, and once before writing code.
 
 > *The best code is code you didn't write. The best tokens are tokens you didn't spend.*
 
