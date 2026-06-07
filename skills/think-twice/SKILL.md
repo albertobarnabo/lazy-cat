@@ -19,6 +19,17 @@ Productive laziness is not about doing less. It's about never doing more than ne
 
 ---
 
+## When NOT to run this checklist
+
+Skip if the task is trivially small (under ~10 lines, no data, no new dependencies) or if the
+user has explicitly described custom logic that no generic library could cover. In those cases,
+proceed directly.
+
+Also: never hand-roll cryptography or security primitives. "Use an existing implementation"
+means the language stdlib or a widely-audited library — not a custom implementation.
+
+---
+
 ## The Lazy Check
 
 Run this before any task that feels heavy — a large block of code, repetitive data, a complex algorithm,
@@ -29,6 +40,9 @@ Before writing a single line, make sure the task is correctly understood.
 - What is the user *actually* trying to achieve?
 - Am I about to solve a symptom instead of the root cause?
 - Would a 2-sentence clarification save 200 lines of code?
+
+**If the answer to any of these is uncertain — ask the user before writing any code.**
+One targeted question now saves a full redo later.
 
 ### 2. Is there an existing solution?
 Someone has almost certainly solved this before.
@@ -111,7 +125,7 @@ a solution that costs 50,000 tokens from one that costs 50.
 
 Productive laziness has limits. Override it when:
 
-- **Correctness requires it**: security-critical code needs a vetted internal implementation
+- **Correctness requires it**: security-critical code needs the language stdlib or a widely-audited library — never a hand-rolled implementation
 - **Latency requires it**: a runtime API call adds unacceptable delay to a hot path
 - **Dependencies are restricted**: offline-first or zero-dependency environments
 - **The shortcut is overengineered**: adding a library for 5 lines of trivial code
@@ -126,3 +140,4 @@ In these cases, proceed — but state why: *"Implementing this directly because 
 
 If you find it, take it and explain what you chose.
 If you don't, proceed — and know you made the right call.
+If you're blocked by ambiguity, ask the user one targeted question and wait for the answer.

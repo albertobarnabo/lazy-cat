@@ -1,7 +1,8 @@
 {
-  "name": "think-twice",
-  "description": "Forces Claude to pause before any expensive task and ask: is there a smarter way? Triggers before heavy computation, large code generation, or any implementation that feels like hard work. Claude runs a checklist — questioning the problem, the scope, the approach, and whether an existing API, package, or dataset already solves it. Saves thousands of tokens on tasks like: country or city data, authentication, fake data generation, PDF generation, rate limiting, search. The best tokens are the ones you didn't spend.",
-  "version": "1.0.0",
+  "name": "lean",
+  "description": "Two skills that eliminate the two biggest sources of token waste: think-twice (pick the cheaper approach before starting) and surgical (build only what was asked, nothing more). The best tokens are the ones you didn't spend.",
+  "version": "2.0.0",
+  "repository": "https://github.com/albertobarnabo/lean",
   "author": {
     "name": "albertobarnabo"
   },
@@ -11,8 +12,9 @@
     "cost-saving",
     "lazy-evaluation",
     "productivity",
+    "yagni",
     "ai-agent",
     "anti-patterns"
   ],
-  "skills": ["./"]
+  "skills": "./skills"
 }

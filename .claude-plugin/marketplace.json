@@ -1,19 +1,19 @@
 {
-  "name": "think-twice",
-  "id": "think-twice",
+  "name": "lean",
+  "id": "lean",
   "owner": {
     "name": "albertobarnabo"
   },
   "metadata": {
-    "description": "Makes Claude pause before doing expensive work and ask: is there a smarter way? Saves up to 500x tokens by catching greedy AI behavior before it starts.",
-    "version": "1.0.0"
+    "description": "Two skills that teach Claude to spend tokens wisely: think-twice (pause before picking an approach) and surgical (build only what was asked). Up to 178x token savings, tested.",
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "think-twice",
+      "name": "lean",
       "source": "./",
-      "description": "Forces Claude to run a checklist before any high-cost task: Am I solving the right problem? Does an existing solution exist? Am I doing more than needed? Is there a simpler approach? Can it be done lazily? Tested savings: 500x on city autocomplete, 250x on fake user profiles, 16x on currency conversion, 12x on rate limiting.",
-      "version": "1.0.0",
+      "description": "Two skills: think-twice forces Claude to check for existing APIs, packages, and simpler approaches before implementing. Surgical forces Claude to build exactly what was asked, nothing more. Tested savings: 178x on fake user profiles, 16x on bug fixes, 13x on currency conversion, 6x on city autocomplete, 5x on rate limiting.",
+      "version": "2.0.0",
       "author": {
         "name": "albertobarnabo"
       },
@@ -23,7 +23,8 @@
         "productivity",
         "lazy-evaluation",
         "anti-patterns",
-        "ai-agent"
+        "ai-agent",
+        "yagni"
       ],
       "category": "productivity",
       "strict": false
