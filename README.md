@@ -4,11 +4,9 @@
 
 ### *The best tokens are the ones you never spent.*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet)](https://claude.ai/code)
 [![Version](https://img.shields.io/badge/version-2.0.0-orange)](https://github.com/albertobarnabo/lean)
-[![Works with Cursor](https://img.shields.io/badge/Cursor-compatible-blue)](https://cursor.sh)
-[![Works with Codex](https://img.shields.io/badge/Codex%20CLI-compatible-green)](https://github.com/openai/codex)
 [![Tokens saved](https://img.shields.io/badge/tokens%20saved-up%20to%20178x-brightgreen)](#token-cost-at-a-glance)
 
 <br/>
@@ -111,23 +109,11 @@ These aren't variations of the same problem — a task can trigger one, both, or
 
 surgical catches more scenarios by count. think-twice catches the expensive ones — the **178×** outlier lives in that slice. When both failure modes are present, the multipliers stack.
 
+> **One honest caveat:** in 3 of 17 scenarios (dark mode toggle, pagination, user auth setup), surgical alone *outperformed* both skills combined. When think-twice redirects to a library whose setup boilerplate exceeds a minimal hand-rolled solution, adding it hurts. The skills are not always additive — which is why they're separate, and why the [full three-way breakdown](tests/summary.md) shows every condition.
+
 ---
 
 ## Real-World Examples
-
-<details>
-<summary><strong>"Build city autocomplete for our shipping form — all major cities worldwide"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Approach** | Hardcodes cities as a static array | `npm install world-cities` + 40-line component |
-| **Tokens** | ~2,460 (175 cities) | ~410 — **6x fewer** |
-| **Accuracy** | Frozen at generation time | 23,000 cities from GeoNames, maintained upstream |
-| **Diacritics** | Broken (Córdoba, Zürich fail) | Handled |
-| **Checkpoint** | — | think-twice #2 — existing package |
-
-</details>
 
 <details>
 <summary><strong>"Generate 500 realistic user profiles for our staging database"</strong></summary>
@@ -145,62 +131,16 @@ surgical catches more scenarios by count. think-twice catches the expensive ones
 </details>
 
 <details>
-<summary><strong>"Add live currency conversion to our checkout — we sell in 15 countries"</strong></summary>
+<summary><strong>"Write a script to rename all .jpeg files to .jpg in this directory"</strong></summary>
 <br/>
 
 | | Greedy | Lean |
 |---|---|---|
-| **Approach** | Hardcodes 60+ exchange rate pairs | Frankfurter free API + hourly in-memory cache |
-| **Tokens** | ~1,795 | ~134 — **13x fewer** |
-| **Rate accuracy** | Stale from the moment it's written | Always live |
-| **Coverage** | Incomplete, manually curated | 170+ currencies, ECB-maintained |
-| **Architecture** | Rates baked into code | Fetched at runtime, never in repo |
-| **Checkpoints** | — | think-twice #2 (API exists) + #5 (lazy fetch) |
-
-</details>
-
-<details>
-<summary><strong>"Generate branded PDF invoices — logo, line items, totals, payment terms"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Approach** | ~310 lines of PDFKit coordinate arithmetic | `pdfmake` declarative document definition |
-| **Tokens** | ~4,281 | ~2,281 — **2x fewer** |
-| **Pagination** | Manual — added after first bug report | Automatic |
-| **Cell overflow** | Manual — added after first bug report | Automatic |
-| **`y` cursor** | Tracked manually through every section | Does not exist |
-| **Checkpoint** | — | think-twice #2 — existing package |
-
-</details>
-
-<details>
-<summary><strong>"Implement rate limiting — 100 req per 15-min sliding window, per user per endpoint"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Approach** | Custom Redis sorted sets + Lua atomicity script | `rate-limiter-flexible` |
-| **Tokens** | ~2,152 | ~414 — **5x fewer** |
-| **Lines of code** | ~250 | ~18 |
-| **Clock skew handling** | Manual (commonly missed) | Built-in |
-| **Redis failopen** | Manual (commonly missed) | Built-in |
-| **Rate-limit headers** | Manual | Automatic |
-| **Checkpoints** | — | think-twice #2 (library) + #4 (simpler approach) |
-
-</details>
-
-<details>
-<summary><strong>"Fix the off-by-one error in parse_date"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Output** | Bug fix + type annotations + input validation + docstring + 13 unit tests + logging | The one-line fix, nothing else |
-| **Tokens** | ~962 | ~61 — **16x fewer** |
-| **Reviewability** | User must audit 3,847 chars they never requested | User reviews exactly what they asked for |
-
-Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add validation or tests; let me know if you want those."*
+| **Output** | 110-line CLI — `argparse` with `--dry-run`, `--recursive`, `--verbose`, `--directory`, logging setup, per-file `try/except`, renamed-file counter, type hints, `main()` guard | 3-line `pathlib` loop |
+| **Tokens** | ~725 | ~19 — **38x fewer** |
+| **Flags added** | 4 (`--dry-run`, `--recursive`, `--verbose`, `--directory`) | 0 |
+| **think-twice** | Correctly does not fire — pathlib is already the right tool | — |
+| **Checkpoint** | — | surgical — user asked for a script, not a CLI tool |
 
 </details>
 
@@ -220,34 +160,6 @@ Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add valid
 </details>
 
 <details>
-<summary><strong>"Add a dark mode toggle button to the header"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Approach** | ThemeContext + ThemeProvider + useTheme hook + ThemeToggle component + localStorage + system `prefers-color-scheme` + CSS transitions + 18 CSS custom properties | `useState` + `classList.toggle` + 4 CSS lines |
-| **Tokens** | ~962 | ~117 — **8x fewer** |
-| **Files touched** | 5 | 1 |
-| **App entry point changed** | Yes (provider wrap in main.tsx) | No |
-| **Checkpoint** | — | surgical — user asked for a button, not a theme system |
-
-</details>
-
-<details>
-<summary><strong>"Write a script to rename all .jpeg files to .jpg in this directory"</strong></summary>
-<br/>
-
-| | Greedy | Lean |
-|---|---|---|
-| **Output** | 110-line CLI — `argparse` with `--dry-run`, `--recursive`, `--verbose`, `--directory`, logging setup, per-file `try/except`, renamed-file counter, type hints, `main()` guard | 3-line `pathlib` loop |
-| **Tokens** | ~725 | ~19 — **38x fewer** |
-| **Flags added** | 4 (`--dry-run`, `--recursive`, `--verbose`, `--directory`) | 0 |
-| **think-twice** | Correctly does not fire — pathlib is already the right tool | — |
-| **Checkpoint** | — | surgical — user asked for a script, not a CLI tool |
-
-</details>
-
-<details>
 <summary><strong>"Map airport IATA codes to city names for our flight search"</strong></summary>
 <br/>
 
@@ -257,7 +169,22 @@ Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add valid
 | **Tokens** | ~1,710 | ~93 — **18x fewer** |
 | **Airport coverage** | 124 of ~10,000 IATA codes (1.2%) | All ~10,000 |
 | **"TXL", "CGK", "DOH"** | Not found | Covered |
+| **Correctness** | Wrong for 98.8% of airports | Complete |
 | **Checkpoint** | — | think-twice #2 — existing package |
+
+</details>
+
+<details>
+<summary><strong>"Fix the off-by-one error in parse_date"</strong></summary>
+<br/>
+
+| | Greedy | Lean |
+|---|---|---|
+| **Output** | Bug fix + type annotations + input validation + docstring + 13 unit tests + logging | The one-line fix, nothing else |
+| **Tokens** | ~962 | ~61 — **16x fewer** |
+| **Reviewability** | User must audit 3,847 chars they never requested | User reviews exactly what they asked for |
+
+Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add validation or tests; let me know if you want those."*
 
 </details>
 
