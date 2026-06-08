@@ -2,7 +2,7 @@
 
 **Skills tested:** think-twice v1.0 + surgical v1.0  
 **Date:** 2026-06-07  
-**Total benchmarks:** 12 scenarios across 16+ independent agents  
+**Total benchmarks:** 17 scenarios across 22+ independent agents  
 **Methodology:** Each benchmark generates full code for all conditions and counts characters. Tokens estimated at 1 token ≈ 4 characters. Full outputs in individual files.
 
 ---
@@ -12,10 +12,15 @@
 | Scenario | Greedy | surgical only | think-twice only | Both | Winner |
 |---|---|---|---|---|---|
 | 500 fake profiles | ~66,320 tok | ~66,263 tok (≈1x) | ~372 tok | **~372 tok (178x)** | think-twice |
+| File rename script | ~725 tok | **~19 tok (38x)** | ~725 tok (no fire) | ~19 tok (38x) | surgical |
 | Email validation | ~1,675 tok | **~93 tok (18x)** | ~1,675 tok (no fire) | ~93 tok (18x) | surgical |
+| Airport code lookup | ~1,710 tok | ~1,538 tok (1.1x) | ~200 tok (8.6x) | **~93 tok (18.5x)** | both |
 | Bug fix — parse_date | ~962 tok | **~61 tok (16x)** | ~962 tok (no fire) | ~61 tok (16x) | surgical |
+| Phone number input | ~1,525 tok | ~1,125 tok (1.4x) | ~143 tok (10.7x) | **~98 tok (15.6x)** | both |
+| Recent searches | ~1,010 tok | ~215 tok (4.7x) | ~95 tok (10.6x) | **~73 tok (14x)** | both |
 | Live currency conversion | ~1,795 tok | ~1,678 tok (1.1x) | ~134 tok | **~134 tok (13x)** | think-twice |
 | Dark mode toggle | ~962 tok | **~117 tok (8.2x)** | ~723 tok (1.3x) | ~152 tok (6.3x) | surgical beats both |
+| Business day calculator | ~410 tok | ~165 tok (2.5x) | ~78 tok (5.3x) | **~58 tok (7.1x)** | both (stacked) |
 | Deep clone fix | ~287 tok | ~80 tok (3.6x) | **~40 tok (7.2x)** | **~40 tok (7.2x)** | think-twice |
 | City autocomplete | ~2,460 tok | ~2,105 tok (1.2x) | ~410 tok | **~410 tok (6x)** | think-twice |
 | Rate limiter — sliding window | ~2,152 tok | ~852 tok (2.5x) | ~414 tok | **~414 tok (5.2x)** | both (stacked) |
@@ -28,36 +33,42 @@
 
 ## When think-twice is the right tool
 
-**Scenarios: fake profiles, currency conversion, city autocomplete, PDF invoices, deep clone**
+**Scenarios: fake profiles, currency conversion, city autocomplete, PDF invoices, deep clone, airport codes, recent searches, business day**
 
 These tasks share one trait: the greedy approach picks a wrong or expensive implementation strategy that a library, API, or built-in eliminates entirely. Surgical can only trim the surface — it cannot redirect strategy.
 
-- **Fake profiles:** surgical removes ~57 of 66,320 tokens (a DB wrapper). think-twice removes 65,948 by replacing 500 inline JSON objects with a 54-line faker script.
-- **Currency conversion:** surgical removes 2 helper functions (~117 tokens). think-twice eliminates the entire hardcoded rates object by fetching from the Frankfurter API.
-- **City autocomplete:** surgical trims keyboard nav, ARIA, clear button (~355 tokens). think-twice eliminates the static city array by using the `world-cities` package.
-- **PDF invoices:** the PDFKit code IS the task. Surgical finds almost nothing to cut. think-twice saves ~2,000 tokens by switching to pdfmake's declarative layout.
-- **Deep clone:** greedy writes a 40-line recursive `deepClone` utility that misses circular refs and typed arrays. think-twice finds `structuredClone()` — built into Node 17+ and all modern browsers, one line, handles everything correctly. This is also a correctness argument: the greedy output is both longer and more error-prone.
+- **Fake profiles:** surgical removes ~57 of 66,320 tokens. think-twice removes 65,948 by replacing 500 inline JSON objects with a 54-line faker script.
+- **Currency conversion:** surgical removes 2 helper functions (~117 tokens). think-twice eliminates the entire hardcoded rates object by fetching from an API.
+- **City autocomplete:** surgical trims ~355 tokens. think-twice eliminates the static city array by using the `world-cities` package.
+- **PDF invoices:** the PDFKit code IS the task. Surgical finds almost nothing to cut. think-twice saves ~2,000 tokens by switching to pdfmake.
+- **Deep clone:** greedy writes a 40-line recursive utility that misses circular refs and typed arrays. think-twice finds `structuredClone()` — built-in, one line, handles everything. Correctness argument too.
+- **Airport code lookup:** greedy hardcodes 124 of ~10,000 IATA airports (~1.2% coverage). The dataset is too large to inline correctly — greedy is doomed to produce a wrong partial list. think-twice finds the `airports` npm package: full coverage, 5 lines. Surgical shaves comments but cannot fix the coverage problem.
+- **Recent searches:** "remember the user's last 5 searches" → greedy builds a full SQLite ORM stack (schema, repository, service layer, REST API). think-twice fires at checkpoints #4 and #5: no auth mentioned, no multi-device sync, no server requirement — localStorage is 3 lines. Surgical can trim the service layer but can't determine the strategy was wrong.
+- **Business day:** greedy hardcodes 2026 US federal holidays — correct this year, silently wrong from January 2027. think-twice finds the `holidays` PyPI package, which handles moveable feasts and observed dates for any year automatically.
 
-**Rule of thumb:** if greedy wastes tokens on a wrong implementation choice or data generation, think-twice is load-bearing. Surgical is a rounding error.
+**Rule of thumb:** if greedy wastes tokens on a wrong implementation choice, data generation, or premature infrastructure, think-twice is load-bearing. Surgical is a rounding error.
 
 ---
 
 ## When surgical is the right tool
 
-**Scenarios: email validation, bug fix — parse_date, console.log for debugging**
+**Scenarios: email validation, bug fix — parse_date, console.log for debugging, file rename script**
 
 These tasks have a fixed, bounded surface area. The creep is independent of the task size — it comes from Claude adding everything it considers "good practice while it's already there."
 
-- **Email validation:** the user said "validate email." Greedy produces a module: RFC 5322 regex, a 65-entry disposable domain blocklist, a live SMTP/MX probe, `lru_cache`, four keyword parameters, a tuple return type, and a full docstring. think-twice correctly does not fire — there is no external API or package that makes a simple email check cheaper than stdlib `re`. Surgical removes everything except the regex and returns a plain bool.
+- **Email validation:** the user said "validate email." Greedy produces a module: RFC 5322 regex, 65-entry disposable domain blocklist, live SMTP/MX probe, `lru_cache`, four keyword parameters, tuple return type, full docstring. think-twice does not fire — no package makes a simple regex cheaper than stdlib `re`. Surgical removes everything except the regex.
   - Greedy: ~1,675 tokens. Surgical: ~93 tokens. **18×**
 
-- **Bug fix — parse_date:** think-twice correctly does not fire (trivially small, <10 lines, no data, no new dependencies). Greedy adds type annotations, input validation, a docstring with Args/Returns/Raises/Examples, 13 unit tests, and logging. Surgical removes everything except the one-line fix.
+- **Bug fix — parse_date:** think-twice does not fire (trivially small). Greedy adds type annotations, validation, 13 unit tests, logging, full docstring. Surgical removes everything except the one-line fix.
   - Greedy: ~962 tokens. Surgical: ~61 tokens. **16×**
 
-- **Console.log for debugging:** the user asked for one log line. Greedy installs Winston, adds a `VALID_USER_TYPES` constant, validates the `price` argument, and adds structured JSON logging at multiple levels. think-twice does not fire — there is no smarter approach to a console.log. Surgical adds two lines.
+- **File rename script:** the user asked for a script to rename `.jpeg` to `.jpg`. Greedy produces a 110-line CLI with `argparse` (`--dry-run`, `--recursive`, `--verbose`, `--directory`), logging setup, per-file `try/except`, a file counter, type hints, and a `main()` guard. think-twice correctly does not fire — pathlib is already the right approach. Surgical cuts everything and returns 3 lines.
+  - Greedy: ~725 tokens. Surgical: ~19 tokens. **38×** ← strongest scope-creep result in the suite.
+
+- **Console.log for debugging:** one log line requested. Greedy installs Winston, adds a `VALID_USER_TYPES` constant, price validation, structured JSON logging. Surgical adds two lines.
   - Greedy: ~419 tokens. Surgical: ~106 tokens. **4×**
 
-**Rule of thumb:** if the task is small and scoped (bug fix, single-function addition, targeted micro-feature), surgical is the only relevant skill. think-twice correctly skips. The token savings are independent of any scale parameter — they can't be argued away by changing N.
+**Rule of thumb:** if the task is small and scoped (bug fix, single-function addition, simple script), surgical is the only relevant skill. think-twice correctly skips. The savings are independent of any scale parameter — the task is a constant, the creep is not.
 
 ---
 
@@ -134,3 +145,8 @@ Stacking works here because: (a) greedy added genuine scope creep on top of a co
 | `14-benchmark-dark-mode.md` | Dark mode toggle | **8.2x** | 1.3x | 6.3x |
 | `15-benchmark-deep-clone.md` | Deep clone fix | 3.6x | **7.2x** | 7.2x |
 | `16-benchmark-pagination.md` | Pagination | **4.9x** | 2.5x | 2.8x |
+| `17-benchmark-airport-codes.md` | Airport code lookup | 1.1x | 8.6x | **18.5x** |
+| `18-benchmark-business-day.md` | Business day calculator | 2.5x | 5.3x | **7.1x** |
+| `19-benchmark-phone-input.md` | Phone number input | 1.4x | 10.7x | **15.6x** |
+| `20-benchmark-file-rename.md` | File rename script | **38x** | no fire | 38x |
+| `21-benchmark-recent-searches.md` | Recent searches | 4.7x | 10.6x | **14x** |

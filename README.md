@@ -60,10 +60,15 @@ That's not an edge case. That's the default behavior of every AI that hasn't bee
 | Task | Greedy | Lean | Multiplier |
 |---|---|---|---|
 | 500 fake user profiles | ~66,320 tok | ~372 tok | **178×** |
+| File rename script | ~725 tok | ~19 tok | **38×** |
 | Email validation | ~1,675 tok | ~93 tok | **18×** |
+| Airport code lookup | ~1,710 tok | ~93 tok | **18×** |
 | Bug fix — parse_date | ~962 tok | ~61 tok | **16×** |
+| Phone number input | ~1,525 tok | ~98 tok | **16×** |
+| Recent searches | ~1,010 tok | ~73 tok | **14×** |
 | Live currency conversion | ~1,795 tok | ~134 tok | **13×** |
 | Dark mode toggle | ~962 tok | ~117 tok | **8×** |
+| Business day calculator | ~410 tok | ~58 tok | **7×** |
 | Deep clone fix | ~287 tok | ~40 tok | **7×** |
 | City autocomplete | ~2,460 tok | ~410 tok | **6×** |
 | Rate limiter — sliding window | ~2,152 tok | ~414 tok | **5×** |
@@ -71,9 +76,9 @@ That's not an edge case. That's the default behavior of every AI that hasn't bee
 | Console.log for debugging | ~419 tok | ~106 tok | **4×** |
 | PDF invoice generation | ~4,281 tok | ~2,281 tok | **2×** |
 
-These eleven tasks — a normal vibe-coding afternoon — cost **82,308 tokens greedy vs. 4,231 tokens lean**. That's a $1.10 difference, every time, without changing a single prompt.
+These sixteen tasks — a normal vibe-coding afternoon — cost **87,688 tokens greedy vs. 4,572 tokens lean**. That's a $1.10 difference, every time, without changing a single prompt.
 
-*Real outputs from 16 independent test agents. Full code, character-counted. Each scenario tested think-twice only, surgical only, and both — to show which skill drives savings and when one beats the other. [Three-way breakdown →](tests/summary.md)*
+*Real outputs from 22 independent test agents. Full code, character-counted. Each scenario tested think-twice only, surgical only, and both — to show which skill drives savings and when one beats the other. [Three-way breakdown →](tests/summary.md)*
 
 ---
 
@@ -194,6 +199,34 @@ Result: *"Fixed the off-by-one on line 5 — removed the `+ 1`. Didn't add valid
 | **Files touched** | 5 | 1 |
 | **App entry point changed** | Yes (provider wrap in main.tsx) | No |
 | **Checkpoint** | — | surgical — user asked for a button, not a theme system |
+
+</details>
+
+<details>
+<summary><strong>"Write a script to rename all .jpeg files to .jpg in this directory"</strong></summary>
+<br/>
+
+| | Greedy | Lean |
+|---|---|---|
+| **Output** | 110-line CLI — `argparse` with `--dry-run`, `--recursive`, `--verbose`, `--directory`, logging setup, per-file `try/except`, renamed-file counter, type hints, `main()` guard | 3-line `pathlib` loop |
+| **Tokens** | ~725 | ~19 — **38x fewer** |
+| **Flags added** | 4 (`--dry-run`, `--recursive`, `--verbose`, `--directory`) | 0 |
+| **think-twice** | Correctly does not fire — pathlib is already the right tool | — |
+| **Checkpoint** | — | surgical — user asked for a script, not a CLI tool |
+
+</details>
+
+<details>
+<summary><strong>"Map airport IATA codes to city names for our flight search"</strong></summary>
+<br/>
+
+| | Greedy | Lean |
+|---|---|---|
+| **Approach** | Hardcodes ~124 airports as a static object | `npm install airports` + 5-line lookup |
+| **Tokens** | ~1,710 | ~93 — **18x fewer** |
+| **Airport coverage** | 124 of ~10,000 IATA codes (1.2%) | All ~10,000 |
+| **"TXL", "CGK", "DOH"** | Not found | Covered |
+| **Checkpoint** | — | think-twice #2 — existing package |
 
 </details>
 
