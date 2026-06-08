@@ -216,8 +216,10 @@ Skills load their full rulebook when invoked manually or when Claude judges the 
 
 **Via plugin system:**
 ```
-/plugin install albertobarnabo/lean
+/plugin marketplace add albertobarnabo/lean
+/plugin install lean@lean
 ```
+First register the repo as a marketplace, then install the `lean` plugin from it. The `@lean` suffix is the marketplace name. Restart your session afterward so the skills load.
 
 **Via curl** (installs both skills):
 ```bash
