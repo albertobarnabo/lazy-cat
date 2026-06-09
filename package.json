@@ -1,6 +1,6 @@
 {
-  "name": "lazy-cat",
-  "version": "2.0.0",
+  "name": "lazycat-skill",
+  "version": "2.0.1",
   "description": "Teaches your AI coding agent productive laziness: think-twice (pick the cheaper approach before starting) and surgical (build only what was asked). The best tokens are the ones you didn't spend. Works with Claude Code, Gemini CLI, and Codex.",
   "bin": {
     "lazy-cat": "bin/install.js"
@@ -28,8 +28,5 @@
   ],
   "author": "albertobarnabo",
   "license": "MIT",
-  "homepage": "https://github.com/albertobarnabo/lazy-cat#readme",
-  "dependencies": {
-    "lazy-cat": "^2.0.0"
-  }
+  "homepage": "https://github.com/albertobarnabo/lazy-cat#readme"
 }
