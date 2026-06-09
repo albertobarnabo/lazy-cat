@@ -1,10 +1,8 @@
 <div align="center">
 
 <img src="assets/lazy-cat.png" alt="lazy-cat" width="200"/>
-
-# lazy-cat
-
-### *The best tokens are the ones you never spent.*
+<h1>lazy-cat</h1>
+<h3><em>The best tokens are the ones you never spent.</em></h3>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet)](https://claude.ai/code)
