@@ -287,17 +287,31 @@ That's it. The rest follows.
 - [@albertobarnabo](https://github.com/albertobarnabo) — author
 - [@ayoubighissou99](https://github.com/ayoubighissou99) — co-author
 
+This project follows a [code of conduct](CODE_OF_CONDUCT.md). By contributing, you agree to abide by it.
+
 ---
 
 ## Contributing
 
-Found a new waste pattern — a task where Claude defaults to the expensive path when a better one exists? Open a PR:
+The most useful contribution is a benchmark nobody has run yet — a real task where Claude defaulted to the expensive path when a better one existed. If you've seen it happen, it belongs here.
 
-- A new shortcut row in an existing skill's table
-- A new skill for a pattern not yet covered
-- A real token-cost comparison from your own usage
+**To submit a benchmark:**
 
-The best contributions, like the best code, are the ones that do exactly what's needed — nothing more.
+1. Run the task with and without lean — write out the actual code outputs, don't summarize
+2. Count characters, estimate tokens (chars ÷ 4)
+3. Copy the format from any file in [`tests/`](tests/)
+4. Open a PR with your file as `tests/NN-benchmark-your-scenario.md`
+
+A good benchmark has a task someone would actually give Claude, real code for both conditions (not pseudocode), and a clear winner with a reason. See [`tests/summary.md`](tests/summary.md) for the full picture of what's already covered.
+
+**Other ways to contribute:**
+
+- A new skill for a failure mode the current two don't cover
+- Verified results in a language we haven't tested (Go, Rust, Swift, Java)
+- Platform-specific install instructions (Cursor, Codex CLI, Gemini CLI)
+- A real-world saving from your own codebase — even a one-liner in an issue
+
+The best contributions, like the best code, do exactly what's needed — nothing more.
 
 ---
 
