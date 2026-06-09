@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-blueviolet)](https://claude.ai/code)
-[![Version](https://img.shields.io/badge/version-2.0.0-orange)](https://github.com/albertobarnabo/lazy-cat)
+[![Version](https://img.shields.io/badge/version-2.0.1-orange)](https://github.com/albertobarnabo/lazy-cat)
 [![Tokens saved](https://img.shields.io/badge/8x%20fewer%20tokens-median%20across%2017%20tasks-brightgreen)](#token-cost-at-a-glance)
 
 <br/>
