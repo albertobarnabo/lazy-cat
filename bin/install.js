@@ -32,14 +32,11 @@ function writeRules(file, block) {
   fs.writeFileSync(file, next);
 }
 
-// --- Claude Code: install skills + namespaced commands (its native form) ---
+// --- Claude Code: install skills (invoked as /think-twice, /surgical) ---
 const claudeDir = project
   ? path.join(base, ".claude")
   : process.env.CLAUDE_CONFIG_DIR || path.join(base, ".claude");
 copyDirInto(path.join(pkgRoot, "skills"), path.join(claudeDir, "skills"));
-const cmdDest = path.join(claudeDir, "commands", "lean");
-fs.mkdirSync(cmdDest, { recursive: true });
-copyDirInto(path.join(pkgRoot, "commands"), cmdDest);
 
 // --- Gemini + Codex: write the rule block into their instruction files ---
 const rules = fs.readFileSync(path.join(pkgRoot, "rules", "lean.md"), "utf8").trim();
@@ -54,7 +51,7 @@ writeRules(geminiFile, block);
 writeRules(codexFile, block);
 
 console.log(`lean installed (${project ? "project" : "global"})`);
-console.log(`  Claude: ${path.join(claudeDir, "skills")}  (+ /lean: commands)`);
+console.log(`  Claude: ${path.join(claudeDir, "skills")}  (/think-twice, /surgical)`);
 console.log(`  Gemini: ${geminiFile}`);
 console.log(`  Codex:  ${codexFile}`);
 console.log("Restart your agent session so the rules/skills load.");

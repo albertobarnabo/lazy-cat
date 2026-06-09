@@ -8,7 +8,6 @@
   "files": [
     "bin",
     "skills",
-    "commands",
     "rules"
   ],
   "scripts": {

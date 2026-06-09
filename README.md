@@ -223,7 +223,7 @@ One command sets lean up for every supported agent it can reach:
 
 | Agent | What gets installed | Global location | Project location |
 |---|---|---|---|
-| Claude Code | both skills + `/lean:*` commands | `~/.claude/` | `./.claude/` |
+| Claude Code | both skills (`/think-twice`, `/surgical`) | `~/.claude/` | `./.claude/` |
 | Gemini CLI | lean rule block | `~/.gemini/GEMINI.md` | `./GEMINI.md` |
 | Codex | lean rule block | `~/.codex/AGENTS.md` | `./AGENTS.md` |
 

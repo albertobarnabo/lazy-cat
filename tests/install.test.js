@@ -35,7 +35,6 @@ const proj = tmpdir();
 run(["--project"], { cwd: proj });
 check("Claude  .claude/skills/think-twice/SKILL.md", has(path.join(proj, ".claude/skills/think-twice/SKILL.md")));
 check("Claude  .claude/skills/surgical/SKILL.md", has(path.join(proj, ".claude/skills/surgical/SKILL.md")));
-check("Claude  .claude/commands/lean/think-twice.md", has(path.join(proj, ".claude/commands/lean/think-twice.md")));
 check("Gemini  GEMINI.md has lean block", contains(path.join(proj, "GEMINI.md"), "lean:start"));
 check("Codex   AGENTS.md has lean block", contains(path.join(proj, "AGENTS.md"), "lean:start"));
 
