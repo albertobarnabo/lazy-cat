@@ -22,7 +22,7 @@ Be direct. Be kind. Focus on the work.
 
 ## Enforcement
 
-Violations can be reported by opening a private issue or emailing the maintainers directly via GitHub. We will respond within 48 hours. Maintainers reserve the right to remove comments, close issues, or ban contributors who repeatedly violate this policy.
+Violations can be reported by opening a private issue or emailing the maintainers directly via GitHub. We will respond within 5 working days. Maintainers reserve the right to remove comments, close issues, or ban contributors who repeatedly violate this policy.
 
 ---
 
