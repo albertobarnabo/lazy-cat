@@ -4,29 +4,57 @@ const os = require("node:os");
 const path = require("node:path");
 
 const pkgRoot = path.join(__dirname, "..");
-const configDir =
-  process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), ".claude");
+const project = process.argv.includes("--project");
+const base = project ? process.cwd() : os.homedir();
 
-const skillsSrc = path.join(pkgRoot, "skills");
-const commandsSrc = path.join(pkgRoot, "commands");
-const commandsDest = path.join(configDir, "commands", "lean");
+const START = "<!-- lean:start -->";
+const END = "<!-- lean:end -->";
 
-for (const name of fs.readdirSync(skillsSrc)) {
-  fs.cpSync(
-    path.join(skillsSrc, name),
-    path.join(configDir, "skills", name),
-    { recursive: true }
-  );
+function copyDirInto(srcDir, destDir) {
+  for (const name of fs.readdirSync(srcDir)) {
+    fs.cpSync(path.join(srcDir, name), path.join(destDir, name), {
+      recursive: true,
+    });
+  }
 }
 
-fs.mkdirSync(commandsDest, { recursive: true });
-for (const name of fs.readdirSync(commandsSrc)) {
-  fs.cpSync(path.join(commandsSrc, name), path.join(commandsDest, name), {
-    recursive: true,
-  });
+// Write the portable rule block into an instructions file, idempotently:
+// replace an existing lean block between markers, or append a new one.
+function writeRules(file, block) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  const re = new RegExp(`${START}[\\s\\S]*?${END}`);
+  const next = re.test(existing)
+    ? existing.replace(re, block)
+    : existing
+    ? `${existing.trimEnd()}\n\n${block}\n`
+    : `${block}\n`;
+  fs.writeFileSync(file, next);
 }
 
-console.log(`lean installed to ${configDir}`);
-console.log("  skills:   think-twice, surgical");
-console.log("  commands: /lean:think-twice, /lean:surgical");
-console.log("Restart your Claude Code session so the skills load.");
+// --- Claude Code: install skills + namespaced commands (its native form) ---
+const claudeDir = project
+  ? path.join(base, ".claude")
+  : process.env.CLAUDE_CONFIG_DIR || path.join(base, ".claude");
+copyDirInto(path.join(pkgRoot, "skills"), path.join(claudeDir, "skills"));
+const cmdDest = path.join(claudeDir, "commands", "lean");
+fs.mkdirSync(cmdDest, { recursive: true });
+copyDirInto(path.join(pkgRoot, "commands"), cmdDest);
+
+// --- Gemini + Codex: write the rule block into their instruction files ---
+const rules = fs.readFileSync(path.join(pkgRoot, "rules", "lean.md"), "utf8").trim();
+const block = `${START}\n${rules}\n${END}`;
+const geminiFile = project
+  ? path.join(base, "GEMINI.md")
+  : path.join(base, ".gemini", "GEMINI.md");
+const codexFile = project
+  ? path.join(base, "AGENTS.md")
+  : path.join(base, ".codex", "AGENTS.md");
+writeRules(geminiFile, block);
+writeRules(codexFile, block);
+
+console.log(`lean installed (${project ? "project" : "global"})`);
+console.log(`  Claude: ${path.join(claudeDir, "skills")}  (+ /lean: commands)`);
+console.log(`  Gemini: ${geminiFile}`);
+console.log(`  Codex:  ${codexFile}`);
+console.log("Restart your agent session so the rules/skills load.");

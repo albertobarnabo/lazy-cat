@@ -214,11 +214,20 @@ the user explicitly asked for a complete or production-ready implementation.
 
 Skills load their full rulebook when invoked manually or when Claude judges the context matches. Better for on-demand use or projects where you don't want these rules active at all times.
 
-**Via npm:**
+**Via npm** (works across Claude Code, Gemini CLI, and Codex):
 ```bash
-npx lean-claude
+npx lazycat-skill            # global — installs for your whole account
+npx lazycat-skill --project  # project — installs into the current repo only
 ```
-One command — downloads the package and copies both skills (and the `/lean:*` commands) into `~/.claude/`. Set `CLAUDE_CONFIG_DIR` first to install somewhere else. Restart your session afterward so the skills load.
+One command sets lean up for every supported agent it can reach:
+
+| Agent | What gets installed | Global location | Project location |
+|---|---|---|---|
+| Claude Code | both skills + `/lean:*` commands | `~/.claude/` | `./.claude/` |
+| Gemini CLI | lean rule block | `~/.gemini/GEMINI.md` | `./GEMINI.md` |
+| Codex | lean rule block | `~/.codex/AGENTS.md` | `./AGENTS.md` |
+
+Writing into `GEMINI.md` / `AGENTS.md` is non-destructive — the block sits between `lean:start`/`lean:end` markers and is replaced in place on re-install, so your other instructions are untouched. Restart your agent session afterward so the rules load.
 
 **Via plugin system:**
 ```

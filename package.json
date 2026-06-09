@@ -1,14 +1,15 @@
 {
-  "name": "lean-claude",
+  "name": "lazycat-skill",
   "version": "2.0.0",
-  "description": "Two Claude Code skills that eliminate token waste: think-twice (pick the cheaper approach before starting) and surgical (build only what was asked). The best tokens are the ones you didn't spend.",
+  "description": "Teaches your AI coding agent productive laziness: think-twice (pick the cheaper approach before starting) and surgical (build only what was asked). The best tokens are the ones you didn't spend. Works with Claude Code, Gemini CLI, and Codex.",
   "bin": {
-    "lean": "bin/install.js"
+    "lazycat": "bin/install.js"
   },
   "files": [
     "bin",
     "skills",
-    "commands"
+    "commands",
+    "rules"
   ],
   "scripts": {
     "test": "node tests/install.test.js"
@@ -28,8 +29,5 @@
   ],
   "author": "albertobarnabo",
   "license": "MIT",
-  "homepage": "https://github.com/albertobarnabo/lean#readme",
-  "dependencies": {
-    "lean-claude": "^2.0.0"
-  }
+  "homepage": "https://github.com/albertobarnabo/lean#readme"
 }
