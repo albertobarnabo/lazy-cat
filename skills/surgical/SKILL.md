@@ -3,9 +3,10 @@ name: surgical
 description: >
   Forces Claude to match output scope exactly to what was requested. Triggers before adding error
   handling for impossible edge cases, extracting one-time abstractions into classes, writing tests
-  that weren't asked for, refactoring surrounding code during a bug fix, or future-proofing with
-  config options nobody requested. Does not trigger when error handling, tests, or validation are
-  the explicit subject of the request. The best code is code you didn't write.
+  that weren't asked for, or future-proofing with config options nobody requested. Does not trigger
+  when error handling, tests, or validation are the explicit subject of the request. Does not
+  trigger on edits to existing lines — for minimum-diff enforcement on existing code, use scalpel.
+  The best code is code you didn't write.
 version: 1.0.0
 ---
 
