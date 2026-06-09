@@ -1,3 +1,7 @@
+<div align="center">
+<img src="../assets/lazy-cat.png" alt="lazy-cat" width="160"/>
+</div>
+
 # Test Suite Summary
 
 **Skills tested:** think-twice v1.0 + surgical v1.0  

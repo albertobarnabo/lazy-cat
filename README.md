@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/lazy-cat.png" alt="lazy-cat" width="200"/>
+
 # lazy-cat
 
 ### *The best tokens are the ones you never spent.*
