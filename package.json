@@ -1,6 +1,6 @@
 {
   "name": "lazycat-skill",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Teaches your AI coding agent productive laziness: think-twice (pick the cheaper approach before starting) and surgical (build only what was asked). The best tokens are the ones you didn't spend. Works with Claude Code, Gemini CLI, and Codex.",
   "bin": {
     "lazy-cat": "bin/install.js"

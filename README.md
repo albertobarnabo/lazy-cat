@@ -324,25 +324,9 @@ This project follows a [code of conduct](CODE_OF_CONDUCT.md). By contributing, y
 
 ## Contributing
 
-The most useful contribution is a benchmark nobody has run yet — a real task where Claude defaulted to the expensive path when a better one existed. If you've seen it happen, it belongs here.
+The most useful contribution is a benchmark nobody has run yet — a real task where Claude defaulted to the expensive path when a better one existed. Negative results welcome too.
 
-**To submit a benchmark:**
-
-1. Run the task with and without lazy-cat — write out the actual code outputs, don't summarize
-2. Count characters, estimate tokens (chars ÷ 4)
-3. Copy the format from any file in [`tests/`](tests/)
-4. Open a PR with your file as `tests/NN-benchmark-your-scenario.md`
-
-A good benchmark has a task someone would actually give Claude, real code for both conditions (not pseudocode), and a clear winner with a reason. See [`tests/summary.md`](tests/summary.md) for the full picture of what's already covered.
-
-**Other ways to contribute:**
-
-- A new skill for a failure mode the current two don't cover
-- Verified results in a language we haven't tested (Go, Rust, Swift, Java)
-- Platform-specific install instructions (Cursor, Codex CLI, Gemini CLI)
-- A real-world saving from your own codebase — even a one-liner in an issue
-
-The best contributions, like the best code, do exactly what's needed — nothing more.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the benchmark format, the bar for new skills, and dev setup. The short version: real outputs, real numbers, nothing simulated.
 
 ---
 
