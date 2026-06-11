@@ -219,15 +219,15 @@ Skills load their full rulebook when invoked manually or when Claude judges the 
 npx lazycat-skill            # global — installs for your whole account
 npx lazycat-skill --project  # project — installs into the current repo only
 ```
-One command sets lean up for every supported agent it can reach:
+One command sets lazy-cat up for every supported agent it can reach:
 
 | Agent | What gets installed | Global location | Project location |
 |---|---|---|---|
 | Claude Code | both skills (`/think-twice`, `/surgical`) | `~/.claude/` | `./.claude/` |
-| Gemini CLI | lean rule block | `~/.gemini/GEMINI.md` | `./GEMINI.md` |
-| Codex | lean rule block | `~/.codex/AGENTS.md` | `./AGENTS.md` |
+| Gemini CLI | lazy-cat rule block | `~/.gemini/GEMINI.md` | `./GEMINI.md` |
+| Codex | lazy-cat rule block | `~/.codex/AGENTS.md` | `./AGENTS.md` |
 
-Writing into `GEMINI.md` / `AGENTS.md` is non-destructive — the block sits between `lean:start`/`lean:end` markers and is replaced in place on re-install, so your other instructions are untouched. Restart your agent session afterward so the rules load.
+Writing into `GEMINI.md` / `AGENTS.md` is non-destructive — the block sits between `lazy-cat:start`/`lazy-cat:end` markers and is replaced in place on re-install, so your other instructions are untouched. Restart your agent session afterward so the rules load.
 
 **Via plugin system:**
 ```
@@ -261,6 +261,20 @@ curl -sL https://raw.githubusercontent.com/albertobarnabo/lazy-cat/main/skills/s
 |---|---|
 | `/lazy-cat:think-twice <task>` | Run the full think-twice checklist before starting |
 | `/lazy-cat:surgical <task>` | Implement with zero scope creep — exactly what was asked |
+
+### Track your savings (optional)
+
+Don't take our benchmarks' word for it — measure your own sessions:
+
+```bash
+npx lazycat-skill stats --enable   # logs output tokens per session (local only)
+npx lazycat-skill stats            # report: totals, median/session, week-over-week trend
+npx lazycat-skill stats --disable  # remove the hook, keep the log
+```
+
+This installs a Claude Code `Stop` hook that records each session's output token count to `~/.claude/lazy-cat/usage.jsonl`. Everything stays on your machine — nothing is uploaded, ever.
+
+**Pro tip:** enable stats a few days *before* installing the skills. Then your week-over-week trend is a real before/after of lazy-cat on your own workload.
 
 ---
 

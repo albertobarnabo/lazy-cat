@@ -3,6 +3,12 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
+if (process.argv[2] === "stats") {
+  process.argv.splice(2, 1); // hand remaining flags (--enable/--disable) to stats
+  require("./stats.js");
+  return;
+}
+
 const pkgRoot = path.join(__dirname, "..");
 const project = process.argv.includes("--project");
 const base = project ? process.cwd() : os.homedir();

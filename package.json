@@ -11,7 +11,7 @@
     "rules"
   ],
   "scripts": {
-    "test": "node tests/install.test.js"
+    "test": "node tests/install.test.js && node tests/stats.test.js"
   },
   "repository": {
     "type": "git",
