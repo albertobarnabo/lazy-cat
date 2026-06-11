@@ -1,4 +1,4 @@
-# lean
+# lazy-cat
 
 **Before any substantial coding task** (new feature, data generation, implementation over ~20 lines):
 pause and check — does a public API, package, or one-liner already solve this? If yes, use it.

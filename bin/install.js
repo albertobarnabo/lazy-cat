@@ -7,8 +7,10 @@ const pkgRoot = path.join(__dirname, "..");
 const project = process.argv.includes("--project");
 const base = project ? process.cwd() : os.homedir();
 
-const START = "<!-- lean:start -->";
-const END = "<!-- lean:end -->";
+const START = "<!-- lazy-cat:start -->";
+const END = "<!-- lazy-cat:end -->";
+// Pre-rename marker pair, removed on upgrade so old installs don't keep a stale block
+const LEGACY_RE = /\n?<!-- lean:start -->[\s\S]*?<!-- lean:end -->\n?/;
 
 function copyDirInto(srcDir, destDir) {
   for (const name of fs.readdirSync(srcDir)) {
@@ -22,7 +24,8 @@ function copyDirInto(srcDir, destDir) {
 // replace an existing block between markers, or append a new one.
 function writeRules(file, block) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  let existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  existing = existing.replace(LEGACY_RE, "\n");
   const re = new RegExp(`${START}[\\s\\S]*?${END}`);
   const next = re.test(existing)
     ? existing.replace(re, block)
@@ -39,7 +42,7 @@ const claudeDir = project
 copyDirInto(path.join(pkgRoot, "skills"), path.join(claudeDir, "skills"));
 
 // --- Gemini + Codex: write the rule block into their instruction files ---
-const rules = fs.readFileSync(path.join(pkgRoot, "rules", "lean.md"), "utf8").trim();
+const rules = fs.readFileSync(path.join(pkgRoot, "rules", "lazy-cat.md"), "utf8").trim();
 const block = `${START}\n${rules}\n${END}`;
 const geminiFile = project
   ? path.join(base, "GEMINI.md")
